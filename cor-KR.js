@@ -162,29 +162,30 @@ cor_kr = {
     },
 
     bootApply: function () {
-        let attempts = 0;
-        const maxAttempts = 40;
-        const timer = setInterval(() => {
-            attempts += 1;
+        // [비활성화] 무한 루프 원인
+        // let attempts = 0;
+        // const maxAttempts = 40;
+        // const timer = setInterval(() => {
+        //     attempts += 1;
 
-            try {
-                cor_kr.installLocalizationHook();
-                if (typeof getLocalizationForPage === "function") {
-                    getLocalizationForPage(true);
-                }
-                cor_kr.applyGlobalTranslations();
+        //     try {
+        //         cor_kr.installLocalizationHook();
+        //         if (typeof getLocalizationForPage === "function") {
+        //             getLocalizationForPage(true);
+        //         }
+        //         cor_kr.applyGlobalTranslations();
 
-                if (env && env.menu && env.menu["system-menu"]) {
-                    clearInterval(timer);
-                }
-            } catch (e) {
+        //         if (env && env.menu && env.menu["system-menu"]) {
+        //             clearInterval(timer);
+        //         }
+        //     } catch (e) {
                 // Keep retrying during early boot while UI mounts.
-            }
+        //     }
 
-            if (attempts >= maxAttempts) {
-                clearInterval(timer);
-            }
-        }, 250);
+        //     if (attempts >= maxAttempts) {
+        //         clearInterval(timer);
+        //     }
+        // }, 250);
     },
 
     applyFont: function () {
