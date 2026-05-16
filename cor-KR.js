@@ -413,17 +413,6 @@ cor_kr.reapplyForCurrentPage = function(path) {
 };
 setTimeout(() => {
     try {
-<<<<<<< HEAD
-        cor_kr.observer.page.func(false);
-    } catch (e) {
-        console.warn("[cor-KR] 초기 페이지 처리 실패", e);
-    }
-}, 1500);
-
-setTimeout(() => {
-    try {
-=======
->>>>>>> parent of 06af1c5 (dhll)
         const count = Object.keys(env.localization?.strings || {}).length;
         console.log(`[cor-KR] loaded global string count: ${count}`);
     } catch (e) {
