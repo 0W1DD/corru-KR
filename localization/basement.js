@@ -802,9 +802,16 @@ if (cor_ru && cor_ru.entity_menu) {
 if (window.readoutAdd) {
     const originalReadoutAdd = window.readoutAdd;
     window.readoutAdd = function(obj) {
+        // 메시지를 사전에 번역
+        if (obj && obj.message) {
+            const translatedMsg = processStringTranslation(obj.message);
+            if (translatedMsg !== obj.message) {
+                obj.message = translatedMsg;
+            }
+        }
         // 원본 함수 호출
         originalReadoutAdd(obj);
-        // 추가된 메시지를 번역
+        // DOM 업데이트 후 다시 한 번 번역
         setTimeout(() => {
             if (document.querySelector("#readout")) {
                 processTranslation(document.querySelector("#readout"), true);
@@ -812,7 +819,7 @@ if (window.readoutAdd) {
                     cor_ru.processReadout();
                 }
             }
-        }, 50);
+        }, 100);
     };
 }
 
