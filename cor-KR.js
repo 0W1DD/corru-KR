@@ -34,7 +34,7 @@ const cor_kr_base_path = cor_kr_script_src ? cor_kr_script_src.replace(/\/[^\/]*
 cor_kr = {
     css: `
 @font-face {
-    font-family: "Ycomputer";
+    font-family: 'ycomputer';
     src: url('${cor_kr_base_path}fonts/Ycomputer.ttf') format('truetype'),
          url('${cor_kr_base_path}fonts/Ycomputer.otf') format('opentype');
     font-weight: normal;
@@ -42,8 +42,17 @@ cor_kr = {
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'cafe24';
+    src: local("Cafe24 Ssurround Regular"), local("Cafe24Ssurround"), local("Cafe24");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
-    --cor-kr-font: "Ycomputer", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    --cor-kr-font: 'ycomputer', "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    --cor-kr-choice-font: 'cafe24', 'ycomputer', "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 }
 
 body,
@@ -53,6 +62,13 @@ body,
 #system-menu,
 #entity-menu {
     font-family: var(--cor-kr-font);
+}
+
+#dialogue-box .reply,
+.reply,
+#dialogue-box .response,
+.response {
+    font-family: var(--cor-kr-choice-font) !important;
 }
 
 body[state="corru-loaded"][menu="none"]:not(.in-dialogue)::before, body.loading::after, body.corru-refreshing::after {
