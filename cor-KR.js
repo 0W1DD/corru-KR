@@ -34,6 +34,7 @@ cor_kr = {
         if (env.localization.strings && env.localization.strings[text]) return env.localization.strings[text];
         return text;
     },
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 // 재진입 방지 락 (옵저버 → DOM 수정 → 옵저버 재발화 무한 루프 차단)
@@ -49,6 +50,9 @@ cor_kr._safeRun = function (name, fn) {
 // 폰트 CSS
 cor_kr.css = `
 =======
+=======
+
+>>>>>>> parent of 06af1c5 (dhll)
     installTranslationHook: function () {
         if (cor_kr.translationHookInstalled) return;
 
@@ -214,6 +218,9 @@ cor_kr.css = `
         const style = document.createElement("style");
         style.id = "cor-kr-font";
         style.textContent = `
+<<<<<<< HEAD
+>>>>>>> parent of 06af1c5 (dhll)
+=======
 >>>>>>> parent of 06af1c5 (dhll)
 @font-face {
     font-family: 'cor-kr-user-font';
@@ -411,6 +418,7 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
 })();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (consolething != undefined) console.log(consolething[0], consolething[1]);
         },
         observe: () => {
@@ -554,12 +562,17 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
             try { cor_kr.observer.dialogue.itself.disconnect(); } catch (e) {}
             try { cor_kr.observer.masks.itself.disconnect(); } catch (e) {}
 =======
+=======
+>>>>>>> parent of 06af1c5 (dhll)
 cor_kr.reapplyForCurrentPage = function(path) {
     try {
         const p = path || (location.pathname + location.hash);
         if (p.indexOf("fbx") !== -1 && typeof cor_kr.applyBasementOverrides === "function") {
             cor_kr.applyBasementOverrides();
             console.log("[cor-KR] basement entity 오버라이드 재적용 완료 (path=" + p + ")");
+<<<<<<< HEAD
+>>>>>>> parent of 06af1c5 (dhll)
+=======
 >>>>>>> parent of 06af1c5 (dhll)
         }
         if (typeof getLocalizationForPage === "function") getLocalizationForPage(true);
@@ -568,6 +581,7 @@ cor_kr.reapplyForCurrentPage = function(path) {
         console.warn("[cor-KR] reapplyForCurrentPage failed", e);
     }
 };
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 // ============= 리소스 목록 및 lazy 로더 =============
@@ -641,6 +655,8 @@ setTimeout(() => {
     cor_kr._safeRun('page', () => cor_kr.observer.page.func(false));
 }, 1500);
 =======
+=======
+>>>>>>> parent of 06af1c5 (dhll)
 setTimeout(() => {
     try {
         const count = Object.keys(env.localization?.strings || {}).length;
@@ -649,6 +665,9 @@ setTimeout(() => {
         console.warn("[cor-KR] unable to read string count", e);
     }
 }, 800);
+<<<<<<< HEAD
+>>>>>>> parent of 06af1c5 (dhll)
+=======
 >>>>>>> parent of 06af1c5 (dhll)
 
 // 리소스 업데이트 시작
