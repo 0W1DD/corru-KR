@@ -828,7 +828,8 @@ if (window.readoutAdd) {
 */
 
 // === 지속적인 DOM 번역 감시 === //
-getLocalizationForPage(true);
+// [임시 비활성화] 무한 루프 원인 조사 중
+// getLocalizationForPage(true);
 
 console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
 
