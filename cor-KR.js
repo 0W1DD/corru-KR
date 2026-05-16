@@ -9,14 +9,7 @@ env.localization = {
 }
 
 cor_kr = {
-    baseUrl: (() => {
-        const currentSrc = document.currentScript && document.currentScript.src ? document.currentScript.src : "";
-        if (currentSrc) {
-            return currentSrc.replace(/[^/]*$/, "");
-        }
-        // Fallback: if currentScript is unavailable, use a known base URL.
-        return "https://cdn.jsdelivr.net/gh/0W1DD/corru-KR@main/";
-    })(),
+    baseUrl: "https://raw.githubusercontent.com/0W1DD/corru-KR/main/",
 
     // 번역 처리
     processStringTranslation: function(text) {
