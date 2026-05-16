@@ -9,6 +9,15 @@ env.localization = {
 }
 
 cor_kr = {
+    baseUrl: (() => {
+        const currentSrc = document.currentScript && document.currentScript.src ? document.currentScript.src : "";
+        if (currentSrc) {
+            return currentSrc.replace(/[^/]*$/, "");
+        }
+        // Fallback: set your repository raw URL here if needed.
+        return "https://raw.githubusercontent.com/OW1DD/corru-KR/main/";
+    })(),
+
     // 번역 처리
     processStringTranslation: function(text) {
         if (!text) return text;
@@ -17,9 +26,15 @@ cor_kr = {
     
     // 리소스 로드
     list: {
-        basement: "https://corru-kr.github.io/corru-KR/localization/basement.js",
-        entityMenu: "https://corru-kr.github.io/corru-KR/localization/entity-menu.js",
-        everystuff: "https://corru-kr.github.io/corru-KR/localization/everystuff.js",
+        basement: null,
+        entityMenu: null,
+        everystuff: null,
+    },
+
+    initList: function() {
+        cor_kr.list.basement = cor_kr.baseUrl + "localization/basement.js";
+        cor_kr.list.entityMenu = cor_kr.baseUrl + "localization/entity-menu.js";
+        cor_kr.list.everystuff = cor_kr.baseUrl + "localization/everystuff.js";
     },
     
     updateResources: function () {
@@ -38,4 +53,5 @@ cor_kr = {
 console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50; font-weight: bold;");
 
 // 리소스 업데이트 시작
+cor_kr.initList();
 cor_kr.updateResources();
