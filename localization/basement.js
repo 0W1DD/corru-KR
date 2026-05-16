@@ -780,7 +780,6 @@ start
         알겠어...<+>END
 `);
 
-<<<<<<< HEAD
 // === 엔티티 설명 후처리 === //
 // entity descriptions 적용
 if (cor_ru && cor_ru.entity_menu) {
@@ -828,8 +827,6 @@ if (window.readoutAdd) {
 // === 지속적인 DOM 번역 감시 === //
 getLocalizationForPage(true);
 
-=======
->>>>>>> parent of 0c28fc6 (흠 될까)
 console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
 
 // ===== 엔티티 상호작용 부분 =====
