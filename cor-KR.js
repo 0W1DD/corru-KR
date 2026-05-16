@@ -33,8 +33,9 @@ const cor_kr_base_path = cor_kr_script_src ? cor_kr_script_src.replace(/\/[^\/]*
 
 cor_kr = {
     css: `
+
 @font-face {
-    font-family: 'ycomputer';
+    font-family: 'spacemono'; /* 여기를 ycomputer가 아니라 원본 이름인 spacemono로! */
     src: url('${cor_kr_base_path}fonts/Ycomputer.ttf') format('truetype'),
          url('${cor_kr_base_path}fonts/Ycomputer.otf') format('opentype');
     font-weight: normal;
@@ -42,9 +43,10 @@ cor_kr = {
     font-display: swap;
 }
 
+
 @font-face {
-    font-family: 'cafe24';
-    src: local("Cafe24 Ssurround Regular"), local("Cafe24Ssurround"), local("Cafe24");
+    font-family: 'beech'; 
+    src: url('${cor_kr_base_path}fonts/Cafe24.ttf') format('truetype'); /* cafe24 폰트 경로로 수정 필요 */
     font-weight: normal;
     font-style: normal;
     font-display: swap;
