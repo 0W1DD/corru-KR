@@ -40,7 +40,7 @@ cor_kr.fancy = {
 };
 
 // 재진입 방지 락 (옵저버 → DOM 수정 → 옵저버 재발화 무한 루프 차단)
-cor_kr._locks = { common: false, bodychildren: false, gad: false, dialogue: false, masks: false, page: false, readout: false };
+cor_kr._locks = { common: false, bodychildren: false, gad: false, dialogue: false, masks: false, page: false };
 cor_kr._safeRun = function (name, fn) {
     if (cor_kr._locks[name]) return;
     cor_kr._locks[name] = true;
@@ -123,20 +123,15 @@ cor_kr.processWarning = function (force) {
 
 cor_kr.processMenu = function () {
     try {
-        if (!env.menu) return;
-        if (env.menu['system-menu']) {
-            env.menu['system-menu'].querySelectorAll(".fundfriend").forEach(el => { el.classList.add('tskip') });
-            cor_kr.processSpecificTranslation(env.menu['system-menu'].querySelectorAll('#savetext'), 'placeholder');
-            processTranslation(env.menu['system-menu']);
-        }
-        if (env.menu['entity-menu']) processTranslation(env.menu['entity-menu']);
+        env.menu['system-menu'].querySelectorAll(".fundfriend").forEach(el => { el.classList.add('tskip') });
+        cor_kr.processSpecificTranslation(env.menu['system-menu'].querySelectorAll('#savetext'), 'placeholder');
+        processTranslation(env.menu['system-menu']);
+        processTranslation(env.menu['entity-menu']);
         processTranslation(document.querySelector("#meta-menu"));
         processTranslation(document.querySelector(`#advance-notice`));
         cor_kr.processSpecificTranslation(document.querySelectorAll('.ci-masks'), 'definition');
         cor_kr.processSpecificTranslation(document.querySelectorAll('.ozo-mask'), 'definition');
-    } catch (e) {
-        console.warn('[cor-KR] processMenu failed', e);
-    }
+    } catch (e) { /* 메뉴 아직 준비 안됨 */ }
 };
 
 cor_kr.processReply = function () {
@@ -148,18 +143,28 @@ cor_kr.processReply = function () {
 cor_kr.processReadout = function () {
     processTranslation(document.querySelector("#minireadout"));
 
-    const translateSection = function (selector) {
-        if (!selector) return;
-        selector.querySelectorAll(".message").forEach(el => {
-            processTranslation(el);
+    const dothething = function (selector) {
+        if (selector == null) return;
+        let messages = selector.querySelectorAll(".message");
+        let length = messages.length - 1;
+        messages.forEach(el => {
+            if (length > 0) {
+                el.classList.add('tskip');
+                el.querySelectorAll("*").forEach(c => { c.classList.add('tskip') });
+            }
+            if (length == 1) {
+                if (el.lastElementChild && el.lastElementChild.textContent == "NOTE::'restored partial recent log'")
+                    processTranslation(el, true);
+            }
+            length--;
         });
-        processTranslation(selector);
+        processTranslation(document.querySelector("#readout"));
     };
 
-    translateSection(document.querySelector("#readout"));
-    if (env.menu && env.menu['readout']) translateSection(env.menu['readout']);
+    dothething(document.querySelector("#readout"));
+    if (env.menu && env.menu['readout']) dothething(env.menu['readout']);
     if (env.menuStorage && env.menuStorage.elements && env.menuStorage.elements['readout'])
-        translateSection(env.menuStorage.elements['readout']);
+        dothething(env.menuStorage.elements['readout']);
 };
 
 // ============= 옵저버 정의 (cor-RU와 동일 구조) =============
@@ -171,7 +176,6 @@ cor_kr.observer = {
             processTranslation(document.querySelector(`#mindspike-scanner`));
             processTranslation(document.querySelector(`#advance-notice`));
             cor_kr.processEntityNamesSafeguard();
-            cor_kr.processReadout();
 
             if (document.querySelector("#combat")) {
                 processTranslation(document.querySelector(`#combat`), true);
@@ -191,8 +195,6 @@ cor_kr.observer = {
     bodychildren: {
         func: (consolething) => {
             cor_kr.processWarning();
-            cor_kr.processMenu();
-            cor_kr.processReadout();
 
             const entMenu = document.querySelectorAll('#entity-menu .ent');
             if (entMenu && entMenu.length) {
@@ -279,18 +281,6 @@ cor_kr.observer = {
             console.log("%cmasks observer is set up! - @cor-KR", cor_kr.fancy.setobserver);
         }
     },
-    readout: {
-        func: () => {
-            cor_kr.processReadout();
-        },
-        observe: () => {
-            const r = document.querySelector("#readout");
-            if (r) cor_kr.observer.readout.itself.observe(r, { childList: true, subtree: true });
-            const mr = document.querySelector("#minireadout");
-            if (mr) cor_kr.observer.readout.itself.observe(mr, { childList: true, subtree: true });
-            console.log("%creadout observer is set up! - @cor-KR", cor_kr.fancy.setobserver);
-        }
-    },
     page: {
         func: (consolething) => {
             cor_kr.observer.page.disconnectChildren && cor_kr.observer.page.disconnectChildren();
@@ -319,9 +309,6 @@ cor_kr.observer = {
                 cor_kr.observer.gad.observe();
                 cor_kr.observer.dialogue.observe();
                 cor_kr.observer.masks.observe();
-                cor_kr.observer.readout.observe();
-
-                cor_kr.processReadout();
 
                 if (consolething) console.log(consolething[0], consolething[1]);
             });
@@ -337,7 +324,6 @@ cor_kr.observer = {
             try { cor_kr.observer.gad.itself.disconnect(); } catch (e) {}
             try { cor_kr.observer.dialogue.itself.disconnect(); } catch (e) {}
             try { cor_kr.observer.masks.itself.disconnect(); } catch (e) {}
-            try { cor_kr.observer.readout.itself.disconnect(); } catch (e) {}
         }
     }
 };
@@ -389,7 +375,6 @@ cor_kr.observer.bodychildren.itself = new MutationObserver(() => cor_kr._safeRun
 cor_kr.observer.gad.itself = new MutationObserver(() => cor_kr._safeRun('gad', () => cor_kr.observer.gad.func()));
 cor_kr.observer.dialogue.itself = new MutationObserver(() => cor_kr._safeRun('dialogue', () => cor_kr.observer.dialogue.func()));
 cor_kr.observer.masks.itself = new MutationObserver(() => cor_kr._safeRun('masks', () => cor_kr.observer.masks.func()));
-cor_kr.observer.readout.itself = new MutationObserver(() => cor_kr._safeRun('readout', () => cor_kr.observer.readout.func()));
 cor_kr.observer.page.itself = new MutationObserver(() => cor_kr._safeRun('page', () => cor_kr.observer.page.func(true)));
 
 // ============= 부트 =============
