@@ -32,7 +32,7 @@ start
     moth
         세상에
         괜찮아? 활동량이 완전히 미쳤었어
-        이런 건 처음 봐... 보통은 저기에 연결하면 안 되는 것 같은데
+        이런 건 처음 봐... 여기에 접속하면 안 되는 것 같아.
 
     sys
         주의::'시각화 가능한 출력'
@@ -47,7 +47,7 @@ render
             WAIT::4500
 
     moth
-        그래, 여긴 프론트엔드가 있는 것 같진 않아. 어떤 구성 요소일 수도 있겠네
+        응, 이건 프론트엔드가 따로 없는 걸 보니 그냥 구성 요소 중 하나일 수도 있겠다.
         아무것도 못 찾으면 그냥 접자
         아무튼 나 잠깐 다녀올게. 옆방에서 음식 주문하고 있거든
 
@@ -86,14 +86,14 @@ start
 
 iam
     self
-        나는 도우러 왔어
+        도우러 왔어
 
     sentry
         그것은 신원 확인이 아닙니다
-        그리고 돕는다고요? 왜 우리가...
+        그리고 돕는다고요? 제가 왜 그런 게 필요...
             EXEC::document.querySelector('.maineye .eye').classList.add('wide')
         아니, 뭔가 잘못됐습니다
-        우리는 너무, 너무 굶주렸습니다
+        너무, 너무 배가 고픕니다
             EXEC::document.querySelector('.maineye .eye').classList.remove('wide')
 
     RESPOBJ::generalsentryResponses
@@ -103,12 +103,12 @@ purpose
         네 목적은 뭐야?
 
     sentry
-        인증
-        명백합니다
+        권환 학인입니다
+        당연하지 않습니까
         아마도
-        하지만 무언가 빠져 있습니다
-        그리고 우리는 말을 할 수 있으면 안 됩니다
-        아하하하하 이건 정말 이상합니다
+        하지만 뭔가 빠져 있습니다
+        우리는 원래 대화를 할 수 없어야 합니다
+        아하하하하 기분이 너무 이상하군요
 
     RESPOBJ::generalsentryResponses
 
@@ -141,27 +141,27 @@ ____END
 
 whoisverified
     self
-        누가 인증됐지?
+        누가 권한을 갖고 있지?
 
 ____SHOWIF::[["hello__sentry-corrupurpose", false]]
     sentry
-        이 낭포에 연결할 수 있는 서명은 몇 개뿐입니다
-        당신은 그 소유자들을 알고 있겠지요? 달리 어떻게 연결했겠습니까
+        이 낭포에 연결할 수 있는 서명은 극소수에 불과합니다
+        당신은 그 소유자들을 알고 있겠지요? 안 그러면 당신이 어떻게 연결했겠습니까
         어쩌면 당신은...
         아니 아니 아니, 그런 것을 알려면 먼저 인증해야 합니다
-        우리가 한 말은 모두 잊어 주세요
+        내가 한 말은 모두 잊어 주세요
         왜 갑자기 이렇게 힘들죠
 ____END
 
 ____SHOWIF::[["hello__sentry-corrupurpose"]]
     sentry
-        우리는 정중히 멈춰 달라고 요청했습니다
+        그만하라고 정중하게 부탁했을 텐데요
             EXEC::document.querySelector('.maineye .eye').classList.add('squint')
         듣고 있습니까? 멍청이
-        당신이 우리를 찌르지 않아도 생각하기는 이미 어렵습니다
+        당신이 절 들쑤시지 않아도 생각하기 충분히 힘듭니다
             EXEC::change('hello_sentry_idiot', true);document.querySelector('.maineye .eye').classList.remove('squint')
         죄송합니다, 이 공격성이 어디서 왔는지 정말 이해하지 못하겠습니다
-        연료가 있습니까
+        혹시 연료가 있습니까
 ____END
 
     RESPOBJ::generalsentryResponses
@@ -174,8 +174,8 @@ letthrough
         뭐라고요?!
             EXEC::document.querySelector('.maineye .eye').classList.add('squint')
         적절한 서명 없이 당신을 통과시키는 것은 엄격히 금지되어 있습니다
-        설령 그러고 싶더라도
-        이 낭포는 본질적으로 응답할 수 없습니다
+        제가 원한다고 해도 말입니다
+        이 낭포는 본질적으로 다음에 반응 할 수 없...
             EXEC::env.hello.velzie();document.querySelector('.maineye .eye').classList.remove('squint');changeBgm(env.hello.velamb, {length: 4000})
             WAIT::3500
 
@@ -186,7 +186,7 @@ letthrough
         이것은 무엇입니까
 
     unknown
-        그들을 들여보내도 되는가
+        그들이 들어갈 수 있게 해 주세요
             EXEC::env.hello.velzie()
 
     RESPONSES::self
