@@ -340,36 +340,74 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
 // 페이지 진입 감지: 게임이 자체 basement.js를 로드하여 env.fbx_* 를 덮어쓰므로
 // 페이지가 /fbx/로 들어오면 cor-KR의 한국어 entity 정의를 다시 적용한다.
 (function() {
+    // 1) moveTo 후킹 (게임 자체 navigation 함수)
+    const tryHookMoveTo = () => {
+        if (typeof window.moveTo !== "function" || window.__corKrMoveToHooked) return false;
+        // window.moveTo는 브라우저 기본 함수도 있으므로 게임 함수인지 체크
+        const origMoveTo = window.moveTo;
+        window.moveTo = function(path) {
+            const result = origMoveTo.apply(this, arguments);
+            console.log("[cor-KR] moveTo 감지:", path);
+            // 게임이 페이지 스크립트를 비동기 로드하므로 여러 시점에 재적용
+            [200, 600, 1200, 2500].forEach(delay => {
+                setTimeout(() => cor_kr.reapplyForCurrentPage(path), delay);
+            });
+            return result;
+        };
+        window.__corKrMoveToHooked = true;
+        console.log("[cor-KR] moveTo 후킹 완료");
+        return true;
+    };
+
+    // moveTo가 아직 정의 안되었을 수 있으므로 재시도
+    if (!tryHookMoveTo()) {
+        const retry = setInterval(() => {
+            if (tryHookMoveTo()) clearInterval(retry);
+        }, 200);
+        setTimeout(() => clearInterval(retry), 20000);
+    }
+
+    // 2) pathname 폴링 (백업) - hash 라우팅 가능성도 포함
     let lastPath = "";
     setInterval(() => {
-        const path = location.pathname;
+        const path = location.pathname + location.hash;
         if (path === lastPath) return;
         lastPath = path;
+        console.log("[cor-KR] path 변경:", path);
+        [300, 900, 1800].forEach(delay => {
+            setTimeout(() => cor_kr.reapplyForCurrentPage(path), delay);
+        });
+    }, 500);
 
-        // 페이지가 바뀌었으므로 잠시 후 (원본 페이지 스크립트 실행 뒤) 오버라이드 재적용
-        setTimeout(() => {
-            try {
-                if (path.indexOf("/fbx") !== -1 && typeof cor_kr.applyBasementOverrides === "function") {
+    // 3) 주기적 강제 확인: env.fbx_cyst가 영어인지 검사하여 한국어로 재덮어쓰기
+    setInterval(() => {
+        try {
+            if (typeof env === "undefined" || !env.fbx_cyst) return;
+            const t = env.fbx_cyst.Touch && env.fbx_cyst.Touch.text;
+            if (t && /[a-zA-Z]/.test(t) && !/[가-힣]/.test(t)) {
+                // 영어 그대로면 다시 적용
+                if (typeof cor_kr.applyBasementOverrides === "function") {
                     cor_kr.applyBasementOverrides();
-                    console.log("[cor-KR] basement entity 오버라이드 재적용 완료");
+                    console.log("[cor-KR] 영어 감지 - basement 강제 재적용");
                 }
-                if (typeof getLocalizationForPage === "function") getLocalizationForPage(true);
-                cor_kr.applyGlobalTranslations();
-            } catch (e) {
-                console.warn("[cor-KR] page-change reapply failed", e);
             }
-        }, 500);
-
-        // 한번 더 늦게 재적용 (원본 스크립트가 비동기로 덮을 가능성 대비)
-        setTimeout(() => {
-            try {
-                if (path.indexOf("/fbx") !== -1 && typeof cor_kr.applyBasementOverrides === "function") {
-                    cor_kr.applyBasementOverrides();
-                }
-            } catch (e) {}
-        }, 1500);
-    }, 400);
+        } catch (e) {}
+    }, 1500);
 })();
+
+cor_kr.reapplyForCurrentPage = function(path) {
+    try {
+        const p = path || (location.pathname + location.hash);
+        if (p.indexOf("fbx") !== -1 && typeof cor_kr.applyBasementOverrides === "function") {
+            cor_kr.applyBasementOverrides();
+            console.log("[cor-KR] basement entity 오버라이드 재적용 완료 (path=" + p + ")");
+        }
+        if (typeof getLocalizationForPage === "function") getLocalizationForPage(true);
+        cor_kr.applyGlobalTranslations();
+    } catch (e) {
+        console.warn("[cor-KR] reapplyForCurrentPage failed", e);
+    }
+};
 setTimeout(() => {
     try {
         const count = Object.keys(env.localization?.strings || {}).length;
