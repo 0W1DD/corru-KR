@@ -276,10 +276,17 @@ cor_kr.observer = {
         func: (fetchResources) => {
             cor_kr.observer.page.disconnectChildren();
             
-            new Promise((resolve) => {
-                if (fetchResources) cor_kr.updateResources();
-                resolve(getLocalizationForPage(true));
-            }).then(() => {
+            let resourceWait = Promise.resolve();
+            if (fetchResources) {
+                let res = cor_kr.updateResources();
+                if (res && typeof res.then === 'function') {
+                    resourceWait = res; // 리소스 로딩이 끝날 때까지 대기
+                }
+            }
+
+            resourceWait.then(() => {
+                getLocalizationForPage(true);
+                
                 processTranslation();
                 cor_kr.processStatic(true);
                 cor_kr.processMenu();
@@ -373,9 +380,21 @@ if (!document.querySelector("#cor-kr-css")) {
 // 게임 내부 정의 캐시 무효화로 재번역 유도
 page.formedDefinitionStrings = undefined;
 
-// 옵저버 및 리소스 즉시 구동
+// 옵저버 및 리소스 구동
 cor_kr.observer.page.observe();
-cor_kr.updateResources(true);
-cor_kr.observer.page.func(false); // setTimeout 없이 즉각적인 첫 페이지 번역 실행
+
+// 리소스 로드가 완료된 직후 번역을 실행하도록 Promise 비동기 대기
+let loadPromise = cor_kr.updateResources(true);
+
+if (loadPromise && typeof loadPromise.then === 'function') {
+    loadPromise.then(() => {
+        cor_kr.observer.page.func(false); 
+    });
+} else {
+    // 만약 Promise를 반환하지 않는 환경일 경우를 대비한 최소한의 안전장치
+    setTimeout(() => {
+        cor_kr.observer.page.func(false);
+    }, 500);
+}
 
 console.log("%c[cor-KR] 한국어 로컬라이제이션 최적화 로드 완료", cor_kr.fancy.general);
