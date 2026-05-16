@@ -8,7 +8,10 @@ if (!env.localization.page.fbx) env.localization.page.fbx = {
     entityDescriptions: {}
 };
 
-// 기본 UI 문자열
+// ==========================================
+// 1. 기본 UI 문자열 및 Readout 메시지 번역
+// ==========================================
+// 공식 API가 이 목록을 참조해 화면의 텍스트(readout 포함)를 자동 변환합니다.
 Object.assign(env.localization.page.fbx.strings, {
     "hey buddy": "야, 친구",
     "welcome back": "다시 온 거야",
@@ -117,14 +120,13 @@ Object.assign(env.localization.page.fbx.strings, {
     "there's some promising stuff here and there, but...": "여기저기 희망적인 것도 있지만...",
     "right...": "그렇지...",
     "can it wait for the full report?": "전체 보고서까지 기다릴 수 있어?",
-    "...ok, then just send them down once they're ready, we'll process them too": "...알겠어, 그럼 준비되면 내려 보내 줘. 우리가 처리할게",
+    "...ok, then just send them down once theyre ready, we'll process them too": "...알겠어, 그럼 준비되면 내려 보내 줘. 우리가 처리할게",
     "it's async, you know? we can do more than one": "비동기식이잖아? 우리가 한 개 이상 할 수 있어",
     "...yeah, look, the contractor just got here, so, i need to go": "...네, 봐, 계약자가 방금 왔어. 그래서 나 가야 해",
     "we can talk about it later": "나중에 얘기하자",
     "thanks dude": "고마워, 친구",
     "yeah, bye": "응, 바이",
     "the call is over. moth sighs.": "통화가 끝난다. 모스가 한숨을 쉰다.",
-    "hey buddy": "야, 친구",
     "good news first": "좋은 소식부터",
     "i'm pretty sure another part of the cyst is repaired": "내 생각엔 낭포의 다른 부분이 수리됐을 거야",
     "probably the next part of the collapse, judging by the activity measurements": "활동 측정으로 봐선 아마 붕괴의 다음 부분일 거야",
@@ -143,8 +145,7 @@ Object.assign(env.localization.page.fbx.strings, {
     "but, if things get...": "근데, 만약 상황이...",
     "i don't know, really down to the wire,": "글쎄, 정말 마지막까지 몰려갈 때",
     "i've noticed the monitoring on biohazard disposals is really lax": "나 생물 위험 폐기물 모니터링이 정말 느슨한 걸 알아챘어",
-    "not saying we do anything, but...": "뭘 하자는 건 아니지만...",
-    "...wouldn't be the first time": "...처음도 아니잖아",
+    "not saying we do anything, but...": "...처음도 아니잖아",
     "look, let's just get started": "봐, 일단 시작하자",
     "if it comes to that, we'll cross that bridge when we get there": "그렇게 되면 그때 그 다리를 건넘으로 해",
     "ok": "알겠어",
@@ -164,7 +165,7 @@ Object.assign(env.localization.page.fbx.strings, {
     "r&d didn't seem like they needed it, it's not often they need to kill something": "연구개발팀은 필요 없어 보였어. 뭔가를 죽일 일이 자주 있지 않거든",
     "i'll return it later": "나중에 돌려줄 게",
     
-    // 엔티티 액션 라벨 (소문자로 정의 - 게임이 찾는 형식)
+    // 엔티티 액션 라벨
     "examine": "조사하기",
     "touch": "만져보기",
     "lift": "들어올리기",
@@ -172,7 +173,10 @@ Object.assign(env.localization.page.fbx.strings, {
     "ATTENTION::'additional ACT enabled';'rescan'": "경고::'추가 행동 활성화됨';'재스캔'"
 });
 
-// 엔티티 설명
+// ==========================================
+// 2. 엔티티 설명 (Entity Descriptions)
+// ==========================================
+// 더 이상 수동으로 DOM을 추적해서 덮어씌울 필요 없이, 이 객체에 정의만 해두면 공식 API가 엔티티 클릭 시 자동으로 반영합니다.
 Object.assign(env.localization.page.fbx.entityDescriptions, {
     "DENDRITIC CYST": `::CORRU 낭포 존재
 ::기능 서명: 컨테이너
@@ -197,6 +201,11 @@ Object.assign(env.localization.page.fbx.entityDescriptions, {
 ::모델 2052 G.E.T.
 ::불법 개조 발견됨`
 });
+
+// ==========================================
+// 3. 다이얼로그 (Dialogues)
+// ==========================================
+// 이 부분은 게임 엔진 내부 파서가 처리하므로 기존 형태 그대로 유지합니다.
 
 // 초기 모스 인사말
 env.localization.page.fbx.dialogues.index = generateDialogueObject(`
@@ -780,53 +789,14 @@ start
         알겠어...<+>END
 `);
 
-// === 엔티티 설명 후처리 === //
-// entity descriptions 적용
-if (cor_kr && cor_kr.entity_menu) {
-    cor_kr.entity_menu['DENDRITIC CYST'] = {
-        name: '수상돌기 낭포',
-        desc: env.localization.page.fbx.entityDescriptions['DENDRITIC CYST']
-    };
-    cor_kr.entity_menu['FRACTALLINE CYST'] = {
-        name: '분지 낭포',
-        desc: env.localization.page.fbx.entityDescriptions['FRACTALLINE CYST']
-    };
-    cor_kr.entity_menu['cyst'] = {
-        name: '낭포',
-        desc: env.localization.page.fbx.entityDescriptions['cyst']
-    };
+
+// ==========================================
+// 4. 로컬라이제이션 병합 및 완료
+// ==========================================
+
+// 게임 엔진에 이 페이지의 로컬라이제이션 데이터가 준비되었음을 알리고 병합합니다.
+if (typeof getLocalizationForPage === 'function') {
+    getLocalizationForPage(true);
 }
 
-// === READOUT 메시지 번역 후킹 === //
-// readoutAdd()로 동적으로 추가되는 메시지를 번역 처리
-// [임시 비활성화] 무한 루프 원인 조사 중
-
-if (window.readoutAdd) {
-    const originalReadoutAdd = window.readoutAdd;
-    window.readoutAdd = function(obj) {
-        // 메시지를 소문자로 정규화하여 번역 사전에서 검색
-        if (obj && obj.message) {
-            const msgLower = obj.message.toLowerCase();
-            const translation = env.localization.page.fbx?.strings?.[msgLower];
-            if (translation) {
-                obj.message = translation;
-            }
-        }
-        // 원본 함수 호출
-        originalReadoutAdd(obj);
-        // DOM 업데이트 후 다시 한 번 번역
-        setTimeout(() => {
-            if (document.querySelector("#readout")) {
-                processTranslation(document.querySelector("#readout"), true);
-                if (cor_kr && cor_kr.processReadout) {
-                    cor_kr.processReadout();
-                }
-            }   
-        }, 100);
-    };
-}
-
-getLocalizationForPage(true);
-
-console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
-
+console.log('%c[cor-KR] basement 로컬라이제이션 로드됨 (수동 후킹 제거 & 최적화 완료)', 'color: #2196F3; font-weight: bold;');

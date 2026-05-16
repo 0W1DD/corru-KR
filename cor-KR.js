@@ -1,8 +1,8 @@
 /*
-    cor-KR - corru.observer 한국어 로컬라이제이션 모드 (경량화/최적화 버전)
+    cor-KR - corru.observer 한국어 로컬라이제이션 모드 (공식 API V1 기반 최적화)
     
     > cor-KR.js
-    메인 로더. 불필요한 후킹과 지연을 제거하고, 순수 DOM 옵저버 패턴으로 최적화됨.
+    메인 로더. 복잡한 커스텀 옵저버를 제거하고 공식 env.localization 시스템을 사용합니다.
 */
 
 // EP1 이후는 미지원
@@ -17,7 +17,7 @@ if ((page && page.path == '/' && !check('TEMP!!sat') && check('ep0_epilogue') &&
     throw new Error("hi! cor-KR is availiable only for ep0");
 }
 
-// 로컬라이제이션 저장소
+// 1. 공식 가이드에 맞춘 로컬라이제이션 스토리지 초기화
 env.localization = {
     dialogues: {},
     definitions: {},
@@ -27,18 +27,9 @@ env.localization = {
 };
 
 let cor_kr = window.cor_kr || {};
-
-// 베이스 URL (jsdelivr CDN)
 cor_kr.baseUrl = "https://cdn.jsdelivr.net/gh/0W1DD/corru-KR@main/";
 
-// 로깅 색상
-cor_kr.fancy = {
-    general: 'color:rgb(76, 175, 80)',
-    observed: 'color:rgb(33, 150, 243)',
-    setobserver: 'color:rgb(156, 39, 176)'
-};
-
-// 폰트 및 UI 기본 CSS 설정
+// 2. 폰트 및 UI 기본 CSS 설정 (기존 유지)
 cor_kr.css = `
 @font-face {
     font-family: 'cor-kr-font';
@@ -57,283 +48,20 @@ body,
 }
 `;
 
-// ============= 번역 유틸리티 함수 =============
+if (!document.querySelector("#cor-kr-css")) {
+    const styleEl = document.createElement('style');
+    styleEl.id = "cor-kr-css";
+    styleEl.appendChild(document.createTextNode(cor_kr.css));
+    document.head.appendChild(styleEl);
+}
 
-cor_kr.processSpecificTranslation = function (selector, attribute = false) {
-    if (selector == "mindpike") {
-        document.querySelectorAll("#mindspike-examine").forEach(el => {
-            for (const childNode of el.childNodes) { childNode.textContent = "조사" }
-        });
-        document.querySelectorAll("#mindspike-act").forEach(el => {
-            for (const childNode of el.childNodes) { childNode.textContent = "행동" }
-        });
-    }
-    else if (attribute == false) {
-        selector.forEach(el => {
-            for (const childNode of el.childNodes) {
-                if (childNode.nodeType === Node.TEXT_NODE) {
-                    // 무한 루프 방지: 원문과 번역문이 다를 때만 덮어쓰기
-                    let translated = processStringTranslation(childNode.textContent);
-                    if (childNode.textContent != translated) childNode.textContent = translated;
-                }
-            }
-        });
-    }
-    else {
-        selector.forEach(el => {
-            if (el.getAttribute(attribute) != null) {
-                let translatedAttr = processStringTranslation(el.getAttribute(attribute));
-                if (el.getAttribute(attribute) != translatedAttr) el.setAttribute(attribute, translatedAttr);
-            }
-        });
-    }
-};
-
-cor_kr.processEntityNamesSafeguard = function () {
-    document.querySelectorAll("#content .target").forEach(el => {
-        let ent = el.getAttribute("entity");
-        if (ent) { el.setAttribute("entaltname", processStringTranslation(ent)); }
-    });
-};
-
-cor_kr.processStatic = function (force) {
-    cor_kr.processSpecificTranslation(document.querySelectorAll('title'));
-    cor_kr.processSpecificTranslation(document.querySelectorAll(".enter"), 'page');
-    processTranslation(document.querySelector(`#static`), !!force);
-};
-
-cor_kr.processWarning = function (force) {
-    const ids = ['.cryptowarn', '#mod-warning', '#gpu-warning', '#wide-warning', '#dialogue-skip'];
-    ids.forEach(sel => {
-        const el = document.querySelector(sel);
-        if (el) processTranslation(el, !!force);
-    });
-};
-
-cor_kr.processMenu = function () {
-    try {
-        env.menu['system-menu'].querySelectorAll(".fundfriend").forEach(el => { el.classList.add('tskip') });
-        cor_kr.processSpecificTranslation(env.menu['system-menu'].querySelectorAll('#savetext'), 'placeholder');
-        
-        processTranslation(env.menu['system-menu']);
-        processTranslation(env.menu['entity-menu']);
-        processTranslation(document.querySelector("#meta-menu"));
-        processTranslation(document.querySelector(`#advance-notice`));
-        
-        cor_kr.processSpecificTranslation(document.querySelectorAll('.ci-masks'), 'definition');
-        cor_kr.processSpecificTranslation(document.querySelectorAll('.ozo-mask'), 'definition');
-    } catch (e) {}
-};
-
-cor_kr.processReply = function () {
-    cor_kr.processSpecificTranslation(document.querySelectorAll('.reply'), 'name');
-    cor_kr.processSpecificTranslation(document.querySelectorAll('.reply'), 'definition');
-    cor_kr.processSpecificTranslation(document.querySelectorAll('.reply'), 'endtext');
-};
-
-cor_kr.processReadout = function () {
-    processTranslation(document.querySelector("#minireadout"));
-
-    const scanAndSkip = function (selector) {
-        if (!selector) return;
-        let messages = selector.querySelectorAll(".message");
-        let length = messages.length - 1;
-        
-        messages.forEach(el => {
-            // 핵심 수정: 현재 타자 효과가 진행 중인(active) 메시지라면 무시 클래스들을 모두 떼어내어 계속 번역을 시도하게 함
-            if (el.classList.contains('active')) {
-                el.classList.remove('tskip', 'tdone');
-                el.querySelectorAll("*").forEach(c => { 
-                    c.classList.remove('tskip', 'tdone'); 
-                });
-            } 
-            // active가 아닌 지나간 로그들에만 tskip 적용
-            else if (length > 0) {
-                el.classList.add('tskip');
-                el.querySelectorAll("*").forEach(c => { c.classList.add('tskip'); });
-            }
-
-            if (length == 1) {
-                if (el.lastElementChild && el.lastElementChild.textContent == "NOTE::'restored partial recent log'")
-                    processTranslation(el, true); // 복원 로그는 강제로 번역
-            }
-            length--;
-        });
-        
-        // 전체 readout 영역에 대해 번역 재시도 (위에서 active 요소의 tdone/tskip을 벗겨냈으므로 정상적으로 번역을 시도함)
-        processTranslation(document.querySelector("#readout"));
-    };
-
-    scanAndSkip(document.querySelector("#readout"));
-    if (env.menu && env.menu['readout']) scanAndSkip(env.menu['readout']);
-    if (env.menuStorage && env.menuStorage.elements && env.menuStorage.elements['readout']) scanAndSkip(env.menuStorage.elements['readout']);
-};
-
-// ============= 옵저버 정의 (빠른 반응, 락 제거) =============
-
-cor_kr.observer = {
-    common: {
-        func: () => {
-            processTranslation();
-            processTranslation(document.querySelector(`#mindspike-scanner`));
-            processTranslation(document.querySelector(`#advance-notice`));
-            cor_kr.processReadout();
-            cor_kr.processEntityNamesSafeguard();
-
-            const combatEl = document.querySelector("#combat");
-            if (combatEl) {
-                processTranslation(combatEl, true);
-                cor_kr.processSpecificTranslation(document.querySelectorAll(".floater"), "amt");
-            }
-        },
-        observe: () => {
-            const ms = document.querySelector("#mindspike-scanner");
-            const ct = document.querySelector("#content");
-            if (ms) cor_kr.observer.common.itself.observe(ms, { childList: true, subtree: true });
-            if (ct) cor_kr.observer.common.itself.observe(ct, { childList: true, subtree: true });
-            console.log("%c[cor-KR] Common observer active", cor_kr.fancy.setobserver);
-        }
-    },
-    bodychildren: {
-        func: () => {
-            cor_kr.processWarning();
-
-            const entMenu = document.querySelectorAll('#entity-menu .ent');
-            if (entMenu && entMenu.length) {
-                entMenu.forEach(e => {
-                    if (e.getAttribute('entname') && !e.__corKrHooked) {
-                        e.__corKrHooked = true;
-                        e.addEventListener('click', () => {
-                            try {
-                                const entity = flags.detectedEntities[e.getAttribute('pagename')]['entities'][e.getAttribute('entname')];
-                                const container = document.querySelector('#entcontent');
-                                container.innerHTML = "";
-
-                                let replay = getReadoutMsg({
-                                    message: entity.text.replace(/\n/g, "<br>"),
-                                    type: `examine ${entity.type}`,
-                                    name: entity.displayName || entity.name,
-                                    image: entity.image
-                                });
-
-                                try {
-                                    replay = getReadoutMsg({
-                                        message: cor_kr.entity_menu[entity.name]['desc'],
-                                        type: `examine ${entity.type}`,
-                                        name: cor_kr.entity_menu[entity.name]['name'],
-                                        image: entity.image
-                                    });
-                                } catch (error) { /* Fallback to original */ }
-
-                                container.insertAdjacentHTML('beforeend', replay);
-                                setTimeout(() => container.querySelector('.message').classList.add('active'), 5);
-                            } catch (err) {}
-                        });
-                    }
-                });
-                processTranslation(document.querySelector("#entity-menu"));
-            }
-        },
-        observe: () => {
-            cor_kr.observer.bodychildren.itself.observe(body, { subtree: false, childList: true });
-        }
-    },
-    gad: {
-        func: () => {
-            try {
-                cor_kr.processSpecificTranslation(env.menu["system-menu"].querySelectorAll(".mindsci-status"), "definition");
-            } catch (e) {}
-        },
-        observe: () => {
-            try {
-                const msStatus = env.menu["system-menu"].querySelector(".mindsci-status");
-                if (msStatus) cor_kr.observer.gad.itself.observe(msStatus, { childList: true, subtree: true, attributes: true });
-            } catch (e) {}
-        }
-    },
-    dialogue: {
-        func: () => {
-            cor_kr.processReply();
-        },
-        observe: () => {
-            const dlg = document.querySelector("#dialogue-box");
-            if (dlg) cor_kr.observer.dialogue.itself.observe(dlg, { childList: true });
-        }
-    },
-    masks: {
-        func: () => {
-            const grid = document.querySelector(`.ozo-mask-grid`);
-            if (grid) processTranslation(grid);
-            cor_kr.processSpecificTranslation(document.querySelectorAll('.ci-masks'), 'definition');
-            cor_kr.processSpecificTranslation(document.querySelectorAll('.ozo-mask'), 'definition');
-        },
-        observe: () => {
-            const grid = document.querySelector(".ozo-mask-grid");
-            if (grid) cor_kr.observer.masks.itself.observe(grid, { childList: true });
-        }
-    },
-    page: {
-        func: (fetchResources) => {
-            cor_kr.observer.page.disconnectChildren();
-            
-            let resourceWait = Promise.resolve();
-            if (fetchResources) {
-                let res = cor_kr.updateResources();
-                if (res && typeof res.then === 'function') {
-                    resourceWait = res; // 리소스 로딩이 끝날 때까지 대기
-                }
-            }
-
-            resourceWait.then(() => {
-                getLocalizationForPage(true);
-                
-                processTranslation();
-                cor_kr.processStatic(true);
-                cor_kr.processMenu();
-                cor_kr.processWarning();
-                cor_kr.processReadout();
-
-                const defBox = document.querySelector(`#definition-box`);
-                if (defBox) processTranslation(defBox);
-                
-                const ms = document.querySelector(`#mindspike-scanner`);
-                if (ms) processTranslation(ms);
-                
-                const grid = document.querySelector(`.ozo-mask-grid`);
-                if (grid) processTranslation(grid);
-
-                cor_kr.processSpecificTranslation("mindpike");
-                cor_kr.processSpecificTranslation(document.querySelectorAll(".mindsci-status"), "definition");
-                cor_kr.processEntityNamesSafeguard();
-
-                cor_kr.observer.common.observe();
-                cor_kr.observer.bodychildren.observe();
-                cor_kr.observer.gad.observe();
-                cor_kr.observer.dialogue.observe();
-                cor_kr.observer.masks.observe();
-            });
-        },
-        observe: () => {
-            cor_kr.observer.page.itself.observe(body, { attributes: true, attributeFilter: ['page'] });
-        },
-        disconnectChildren: () => {
-            try { cor_kr.observer.common.itself.disconnect(); } catch (e) {}
-            try { cor_kr.observer.bodychildren.itself.disconnect(); } catch (e) {}
-            try { cor_kr.observer.gad.itself.disconnect(); } catch (e) {}
-            try { cor_kr.observer.dialogue.itself.disconnect(); } catch (e) {}
-            try { cor_kr.observer.masks.itself.disconnect(); } catch (e) {}
-        }
-    }
-};
-
-// ============= 리소스 목록 및 업데이트 =============
-
+// 3. 리소스 목록 및 업데이트 (기존 로직 유지)
 cor_kr.list = {
     everything: cor_kr.baseUrl + "localization/everystuff.js",
+    entityMenu: cor_kr.baseUrl + "localization/entity-menu.js",
     page: {
         fbx: cor_kr.baseUrl + "localization/basement.js"
-    },
-    entityMenu: cor_kr.baseUrl + "localization/entity-menu.js"
+    }
 };
 
 cor_kr.updateResources = function (fresh = false) {
@@ -354,47 +82,60 @@ cor_kr.updateResources = function (fresh = false) {
     }
 
     if (listArray.length != 0) {
-        console.log("%c[cor-KR] 리소스 로드 중...", cor_kr.fancy.general, listArray);
+        console.log("%c[cor-KR] 번역 리소스 로드 중...", 'color:rgb(76, 175, 80)', listArray);
         return addResources(listArray);
     }
+    return Promise.resolve();
 };
 
-// ============= 옵저버 인스턴스 할당 (직접 연결) =============
+// 4. 시스템 부트스트랩 및 공식 Observer 적용
+cor_kr.initLocalization = function() {
+    // 게임 내부 정의 캐시 무효화로 재번역 유도
+    page.formedDefinitionStrings = undefined;
 
-cor_kr.observer.common.itself = new MutationObserver(() => cor_kr.observer.common.func());
-cor_kr.observer.bodychildren.itself = new MutationObserver(() => cor_kr.observer.bodychildren.func());
-cor_kr.observer.gad.itself = new MutationObserver(() => cor_kr.observer.gad.func());
-cor_kr.observer.dialogue.itself = new MutationObserver(() => cor_kr.observer.dialogue.func());
-cor_kr.observer.masks.itself = new MutationObserver(() => cor_kr.observer.masks.func());
-cor_kr.observer.page.itself = new MutationObserver(() => cor_kr.observer.page.func(true));
+    // 현재 페이지 로컬라이제이션 설정 강제 병합
+    if (typeof getLocalizationForPage === 'function') {
+        getLocalizationForPage(true);
+    }
 
-// ============= 부트스트랩 (딜레이 제거, 즉시 실행) =============
+    // 하드코딩된 UI 요소들 수동 초기 번역 (가이드 권장사항 적용)
+    const staticUIs = ['#system-menu', '#meta-menu', '#entity-menu', '#advance-notice'];
+    staticUIs.forEach(selector => {
+        const el = document.querySelector(selector);
+        if (el && typeof processTranslation === 'function') {
+            processTranslation(el);
+        }
+    });
 
-if (!document.querySelector("#cor-kr-css")) {
-    const styleEl = document.createElement('style');
-    styleEl.id = "cor-kr-css";
-    styleEl.appendChild(document.createTextNode(cor_kr.css));
-    document.head.appendChild(styleEl);
-}
+    // 화면 전체 즉시 번역 적용
+    if (typeof processTranslation === 'function') {
+        processTranslation();
+    }
 
-// 게임 내부 정의 캐시 무효화로 재번역 유도
-page.formedDefinitionStrings = undefined;
+    // 5. 가이드에서 제시한 단일 전역 MutationObserver 설정
+    if (!env.mutateObserver) {
+        env.mutateConfig = { childList: true, subtree: true };
+        env.mutateObserver = new MutationObserver(() => {
+            if (typeof processTranslation === 'function') {
+                processTranslation(); 
+            }
+        });
+        env.mutateObserver.observe(document.body, env.mutateConfig);
+        console.log("%c[cor-KR] 공식 MutationObserver 기반 번역 활성화", 'color:rgb(156, 39, 176)');
+    }
+    
+    console.log("%c[cor-KR] 한국어 로컬라이제이션 로드 완료", 'color:rgb(76, 175, 80)');
+};
 
-// 옵저버 및 리소스 구동
-cor_kr.observer.page.observe();
-
-// 리소스 로드가 완료된 직후 번역을 실행하도록 Promise 비동기 대기
+// ============= 실행 =============
 let loadPromise = cor_kr.updateResources(true);
 
 if (loadPromise && typeof loadPromise.then === 'function') {
     loadPromise.then(() => {
-        cor_kr.observer.page.func(false); 
+        cor_kr.initLocalization();
     });
 } else {
-    // 만약 Promise를 반환하지 않는 환경일 경우를 대비한 최소한의 안전장치
     setTimeout(() => {
-        cor_kr.observer.page.func(false);
+        cor_kr.initLocalization();
     }, 500);
 }
-
-console.log("%c[cor-KR] 한국어 로컬라이제이션 최적화 로드 완료", cor_kr.fancy.general);
