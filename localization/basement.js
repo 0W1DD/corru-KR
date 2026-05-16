@@ -799,6 +799,8 @@ if (cor_ru && cor_ru.entity_menu) {
 
 // === READOUT 메시지 번역 후킹 === //
 // readoutAdd()로 동적으로 추가되는 메시지를 번역 처리
+// [임시 비활성화] 무한 루프 원인 조사 중
+/*
 if (window.readoutAdd) {
     const originalReadoutAdd = window.readoutAdd;
     window.readoutAdd = function(obj) {
@@ -823,6 +825,7 @@ if (window.readoutAdd) {
         }, 100);
     };
 }
+*/
 
 // === 지속적인 DOM 번역 감시 === //
 getLocalizationForPage(true);
@@ -876,7 +879,7 @@ env.fbx_cyst = {
     ],
     Touch: {
         exec: `change('realcyst_touched', true); setTimeout(()=>chatter({actor: 'sys', text: "경고::'추가 행동 활성화됨';'재스캔'"}), 2000)`,
-        text: "낭포는 단단한 외부 껍질을 가지고 있어. 근데 위쪽에 있는 몇 개의 동그란 점들은 다른 부분보다 덜 단단해. 네 경험상 이런 건 보통 연결점이야. 이 지점을 더 자세히 스캔할 수 있을 거 같아",
+        text: " 단단한 외부 껍질을 가지고 있어. 근데 위쪽에 있는 몇 개의 동그란 점들은 다른 부분보다 덜 단단해. 네 경험상 이런 건 보통 연결점이야. 이 지점을 더 자세히 스캔할 수 있을 거 같아",
         actor: "sourceless"
     },
     DepthScan: {
