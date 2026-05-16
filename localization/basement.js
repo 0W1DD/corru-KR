@@ -802,11 +802,12 @@ if (cor_ru && cor_ru.entity_menu) {
 if (window.readoutAdd) {
     const originalReadoutAdd = window.readoutAdd;
     window.readoutAdd = function(obj) {
-        // 메시지를 사전에 번역
+        // 메시지를 소문자로 정규화하여 번역 사전에서 검색
         if (obj && obj.message) {
-            const translatedMsg = processStringTranslation(obj.message);
-            if (translatedMsg !== obj.message) {
-                obj.message = translatedMsg;
+            const msgLower = obj.message.toLowerCase();
+            const translation = env.localization.page.fbx?.strings?.[msgLower];
+            if (translation) {
+                obj.message = translation;
             }
         }
         // 원본 함수 호출
