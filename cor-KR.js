@@ -23,19 +23,27 @@ env.localization = {
    page: {}
 }
 
+const cor_kr_script_src = (() => {
+    let script = document.currentScript
+        || Array.from(document.getElementsByTagName('script')).find(s => s.src && s.src.includes('cor-KR.js'));
+    return script ? script.src : '';
+})();
+
+const cor_kr_base_path = cor_kr_script_src ? cor_kr_script_src.replace(/\/[^\/]*$/, '/') : '';
+
 cor_kr = {
     css: `
 @font-face {
-    font-family: 'Ycomputer';
-    src: url('https://0w1dd.github.io/corru-KR/fonts/Ycomputer.ttf') format('truetype'),
-         url('https://0w1dd.github.io/corru-KR/fonts/Ycomputer.otf') format('opentype');
+    font-family: "Ycomputer";
+    src: url('${cor_kr_base_path}fonts/Ycomputer.ttf') format('truetype'),
+         url('${cor_kr_base_path}fonts/Ycomputer.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
 }
 
 :root {
-    --cor-kr-font: "Ycomputer", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    --cor-kr-font: "Ycomputer", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 }
 
 body,
