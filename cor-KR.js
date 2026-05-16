@@ -140,17 +140,27 @@ cor_kr.processReadout = function () {
         let length = messages.length - 1;
         
         messages.forEach(el => {
-            // 과거 로그는 tskip 클래스를 부여하여 옵저버가 다시 건드리지 않도록 차단
-            if (length > 0) {
+            // 핵심 수정: 현재 타자 효과가 진행 중인(active) 메시지라면 무시 클래스들을 모두 떼어내어 계속 번역을 시도하게 함
+            if (el.classList.contains('active')) {
+                el.classList.remove('tskip', 'tdone');
+                el.querySelectorAll("*").forEach(c => { 
+                    c.classList.remove('tskip', 'tdone'); 
+                });
+            } 
+            // active가 아닌 지나간 로그들에만 tskip 적용
+            else if (length > 0) {
                 el.classList.add('tskip');
                 el.querySelectorAll("*").forEach(c => { c.classList.add('tskip'); });
             }
+
             if (length == 1) {
                 if (el.lastElementChild && el.lastElementChild.textContent == "NOTE::'restored partial recent log'")
-                    processTranslation(el, true);
+                    processTranslation(el, true); // 복원 로그는 강제로 번역
             }
             length--;
         });
+        
+        // 전체 readout 영역에 대해 번역 재시도 (위에서 active 요소의 tdone/tskip을 벗겨냈으므로 정상적으로 번역을 시도함)
         processTranslation(document.querySelector("#readout"));
     };
 
