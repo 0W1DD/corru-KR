@@ -14,7 +14,7 @@ corru.observer를 위한 한글 로컬라이제이션 모드입니다!
 
 모드 리스트에 다음 링크를 추가하세요:
 ```
-https://corru-kr.github.io/corru-KR/cor-KR.js
+https://0w1dd.github.io/corru-KR/cor-KR.js
 ```
 
 ## 진행 상황
