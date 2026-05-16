@@ -56,7 +56,48 @@ cor_kr = {
         ];
         
         if (listArray.length > 0) {
-            return addResources(listArray);
+            const result = addResources(listArray);
+
+            const afterLoad = () => {
+                try {
+                    if (typeof getLocalizationForPage === "function") {
+                        getLocalizationForPage(true);
+                    }
+                } catch (e) {
+                    console.warn("[cor-KR] getLocalizationForPage refresh failed", e);
+                }
+
+                cor_kr.applyGlobalTranslations();
+            };
+
+            if (result && typeof result.then === "function") {
+                return result.then(afterLoad);
+            }
+
+            setTimeout(afterLoad, 300);
+            return result;
+        }
+    },
+
+    applyGlobalTranslations: function () {
+        try {
+            if (typeof processTranslation !== "function") return;
+
+            processTranslation(document.querySelector("#dialogue-box"));
+            processTranslation(document.querySelector("#readout"));
+            processTranslation(document.querySelector("#minireadout"));
+            processTranslation(document.querySelector("#meta-menu"));
+            processTranslation(document.querySelector("#static"));
+
+            if (env && env.menu) {
+                processTranslation(env.menu["system-menu"]);
+                processTranslation(env.menu["entity-menu"]);
+                processTranslation(env.menu["readout"]);
+            }
+
+            cor_kr.applyReplySubtitles();
+        } catch (e) {
+            console.warn("[cor-KR] applyGlobalTranslations failed", e);
         }
     },
 
@@ -148,6 +189,12 @@ body,
 
     startObservers: function () {
         cor_kr.observeDialogueMenu();
+
+        if (!cor_kr.translationLoop) {
+            cor_kr.translationLoop = setInterval(() => {
+                cor_kr.applyGlobalTranslations();
+            }, 1200);
+        }
 
         const retry = setInterval(() => {
             if (cor_kr.dialogueObserver) {
