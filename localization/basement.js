@@ -780,4 +780,23 @@ start
         알겠어...<+>END
 `);
 
+// === READOUT 메시지 번역 후킹 === //
+// readoutAdd()로 동적으로 추가되는 메시지를 번역 처리
+if (window.readoutAdd) {
+    const originalReadoutAdd = window.readoutAdd;
+    window.readoutAdd = function(obj) {
+        // 원본 함수 호출
+        originalReadoutAdd(obj);
+        // 추가된 메시지를 번역
+        setTimeout(() => {
+            if (document.querySelector("#readout")) {
+                processTranslation(document.querySelector("#readout"));
+                if (cor_ru && cor_ru.processReadout) {
+                    cor_ru.processReadout();
+                }
+            }
+        }, 50);
+    };
+}
+
 console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
