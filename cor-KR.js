@@ -1,13 +1,4 @@
-﻿/*/ 이 화면을 보고 있다면 모드 URL을 직접 열었을 가능성이 큽니다.       /*/
-/*/ corru.observer의 모드 리스트에 아래 스크립트 URL을 추가하세요.      /*/
-/*/ 스포일러를 피하고 싶다면 이 아래 코드는 읽지 않는 편이 좋습니다.    /*/
-/*/ 설치 URL: https://0w1dd.github.io/corru-KR/cor-KR.js                /*/
-/*/ 모드 페이지: https://github.com/0W1DD/corru-KR                      /*/
-
-
-
-
-/*
+﻿/*
     cor-KR - a Korean localization mod for corru.observer;
     see https://github.com/0W1DD/corru-KR for more info
 
@@ -34,8 +25,17 @@ env.localization = {
 
 cor_kr = {
     css: `
+@font-face {
+    font-family: 'Ycomputer';
+    src: url('https://0w1dd.github.io/corru-KR/fonts/Ycomputer.ttf') format('truetype'),
+         url('https://0w1dd.github.io/corru-KR/fonts/Ycomputer.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
-    --cor-kr-font: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    --cor-kr-font: "Ycomputer", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 }
 
 body,
