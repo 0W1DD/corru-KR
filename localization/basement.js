@@ -29,8 +29,8 @@ start
             EXEC::document.querySelectorAll('.backwall').forEach(e=>e.classList.add('active'))
 
     RESPONSES::self
-        이거 뭐야<+>whatis
-        앉을게<+>sit
+        what is this<+>whatis
+        sit down<+>sit
             SHOWIF::["PAGE!!intrositting", false]
             EXEC::change('PAGE!!intrositting', true)
 
@@ -47,10 +47,10 @@ whatis
         뭐 그래도 돈은 똑같이 받으니까... 한번 해봐
 
     RESPONSES::self
-        앉을게<+>sit
+        sit down<+>sit
             SHOWIF::["PAGE!!intrositting", false]
             EXEC::change('PAGE!!intrositting', true)
-        마인드스파이크 작동<+>END
+        activate mindspike<+>END
             SHOWIF::"PAGE!!intrositting"
 
 sit
@@ -66,9 +66,9 @@ sit
         알지? 평소대로, 마인드스파이크 준비
 
     RESPONSES::self
-        이거 뭐야<+>whatis
+        what is this<+>whatis
             SHOWONCE::
-        마인드스파이크 작동<+>END
+        activate mindspike<+>END
 
 END::env.enableSpikeCursor();MUI('deprohibit')
 `);
