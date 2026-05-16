@@ -167,6 +167,56 @@ cor_kr.processReadout = function () {
         dothething(env.menuStorage.elements['readout']);
 };
 
+cor_kr.translateReadoutMessage = function (message) {
+    if (!message || typeof message !== 'string') return message;
+
+    const translated = processStringTranslation(message);
+    if (translated !== message) return translated;
+
+    const pageStrings = env.localization.page?.[page.dialoguePrefix]?.strings || {};
+    return message.replace(/__[^_]+__/g, token => {
+        const lookup = [token, token.toLowerCase(), token.toUpperCase()].find(k => pageStrings[k]);
+        return lookup ? pageStrings[lookup] : token;
+    });
+};
+
+cor_kr.bindReadoutAdd = function () {
+    if (!window.readoutAdd || window.__corKrReadoutAddHooked) return;
+    const originalReadoutAdd = window.readoutAdd;
+
+    window.readoutAdd = function (obj) {
+        if (obj && obj.message && typeof obj.message === 'string') {
+            obj.message = cor_kr.translateReadoutMessage(obj.message);
+        }
+        originalReadoutAdd(obj);
+        setTimeout(() => {
+            const readoutEl = document.querySelector("#readout");
+            if (readoutEl) {
+                processTranslation(readoutEl, true);
+                cor_kr.processReadout();
+            }
+        }, 50);
+    };
+
+    window.__corKrReadoutAddHooked = true;
+    console.log("%c[cor-KR] readoutAdd hook installed", cor_kr.fancy.general);
+};
+
+cor_kr.waitForReadoutAdd = function () {
+    if (window.readoutAdd) {
+        cor_kr.bindReadoutAdd();
+        return;
+    }
+    if (cor_kr._readoutWaitTimer) return;
+    cor_kr._readoutWaitTimer = setInterval(() => {
+        if (window.readoutAdd) {
+            cor_kr.bindReadoutAdd();
+            clearInterval(cor_kr._readoutWaitTimer);
+            cor_kr._readoutWaitTimer = null;
+        }
+    }, 300);
+};
+
 // ============= 옵저버 정의 (cor-RU와 동일 구조) =============
 
 cor_kr.observer = {
