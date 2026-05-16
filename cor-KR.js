@@ -43,6 +43,21 @@ cor_kr = {
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'barcode';
+    src: url('${cor_kr_base_path}fonts/Cafe24.ttf') format('truetype'); 
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'barcodetext';
+    src: url('${cor_kr_base_path}fonts/Ycomputer.ttf') format('truetype'),
+         url('${cor_kr_base_path}fonts/Ycomputer.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
 
 @font-face {
     font-family: 'beech'; 
