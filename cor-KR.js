@@ -5,233 +5,23 @@ env.localization = {
    definitions: {},
     strings: {},
     entityDescriptions: {},
-   page: {}
-}
-
-cor_kr = {
-    baseUrl: (() => {
-        const currentSrc = document.currentScript && document.currentScript.src ? document.currentScript.src : "";
-        if (currentSrc) {
-            return currentSrc.replace(/[^/]*$/, "");
-        }
-        // Fallback: if currentScript is unavailable, use a known base URL.
-        return "https://cdn.jsdelivr.net/gh/0W1DD/corru-KR@main/";
-    })(),
-
-    // 번역 처리
-    processStringTranslation: function(text) {
-        if (!text) return text;
-        return env.localization.strings[text] || text;
-    },
-
-    getTranslatedString: function(text) {
-        if (!text) return text;
-        const pageKey = page && page.dialoguePrefix ? page.dialoguePrefix : null;
-        const pageStrings = pageKey && env.localization.page && env.localization.page[pageKey]
-            ? env.localization.page[pageKey].strings
-            : null;
-        if (pageStrings && pageStrings[text]) return pageStrings[text];
-        if (env.localization.strings && env.localization.strings[text]) return env.localization.strings[text];
-        return text;
-    },
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-// 재진입 방지 락 (옵저버 → DOM 수정 → 옵저버 재발화 무한 루프 차단)
-cor_kr._locks = { common: false, bodychildren: false, gad: false, dialogue: false, masks: false, page: false };
-cor_kr._safeRun = function (name, fn) {
-    if (cor_kr._locks[name]) return;
-    cor_kr._locks[name] = true;
-    try { fn(); } catch (e) { console.warn('[cor-KR] ' + name + ' func error', e); }
-    // 마이크로태스크 후 해제 (현재 DOM 수정이 트리거한 옵저버 콜백은 무시됨)
-    setTimeout(() => { cor_kr._locks[name] = false; }, 0);
+    page: {}
 };
 
-=======
->>>>>>> parent of d00274d (Update cor-KR.js)
+cor_kr = window.cor_kr || {};
+
+// 베이스 URL (jsdelivr CDN)
+cor_kr.baseUrl = "https://cdn.jsdelivr.net/gh/0W1DD/corru-KR@main/";
+
+// 로깅 색상
+cor_kr.fancy = {
+    general: 'color:rgb(76, 175, 80)',
+    observed: 'color:rgb(33, 150, 243)',
+    setobserver: 'color:rgb(156, 39, 176)'
+};
+
 // 폰트 CSS
 cor_kr.css = `
-=======
-=======
-
->>>>>>> parent of 06af1c5 (dhll)
-=======
-
->>>>>>> parent of 06af1c5 (dhll)
-    installTranslationHook: function () {
-        if (cor_kr.translationHookInstalled) return;
-
-        const original = typeof window.processStringTranslation === "function"
-            ? window.processStringTranslation
-            : null;
-
-        window.processStringTranslation = function (text) {
-            const translated = cor_kr.getTranslatedString(text);
-            if (translated !== text) return translated;
-            if (original) return original(text);
-            return text;
-        };
-
-        cor_kr.translationHookInstalled = true;
-    },
-
-    installLocalizationHook: function () {
-        if (cor_kr.localizationHookInstalled) return;
-        if (typeof window.getLocalizationForPage !== "function") return;
-
-        const originalGetLocalizationForPage = window.getLocalizationForPage;
-
-        window.getLocalizationForPage = function () {
-            const result = originalGetLocalizationForPage.apply(this, arguments);
-
-            if (!result || typeof result !== "object") {
-                return result;
-            }
-
-            if (!result.strings) result.strings = {};
-            if (!result.definitions) result.definitions = {};
-            if (!result.entityDescriptions) result.entityDescriptions = {};
-
-            Object.assign(result.strings, env.localization?.strings || {});
-            Object.assign(result.definitions, env.localization?.definitions || {});
-            Object.assign(result.entityDescriptions, env.localization?.entityDescriptions || {});
-
-            return result;
-        };
-
-        cor_kr.localizationHookInstalled = true;
-    },
-
-    mergeGlobalIntoPageStrings: function () {
-        try {
-            const pageKey = page && page.dialoguePrefix ? page.dialoguePrefix : null;
-            if (!pageKey) return;
-
-            if (!env.localization.page) env.localization.page = {};
-            if (!env.localization.page[pageKey]) env.localization.page[pageKey] = {};
-            if (!env.localization.page[pageKey].strings) env.localization.page[pageKey].strings = {};
-
-            Object.assign(env.localization.page[pageKey].strings, env.localization.strings || {});
-        } catch (e) {
-            console.warn("[cor-KR] mergeGlobalIntoPageStrings failed", e);
-        }
-    },
-    
-    // 리소스 로드
-    list: {
-        basement: null,
-        entityMenu: null,
-        everystuff: null,
-    },
-
-    initList: function() {
-        cor_kr.list.basement = cor_kr.baseUrl + "localization/basement.js";
-        cor_kr.list.entityMenu = cor_kr.baseUrl + "localization/entity-menu.js";
-        cor_kr.list.everystuff = cor_kr.baseUrl + "localization/everystuff.js";
-    },
-    
-    updateResources: function () {
-        let listArray = [
-            cor_kr.list.everystuff,
-            cor_kr.list.entityMenu,
-            cor_kr.list.basement
-        ];
-        
-        if (listArray.length > 0) {
-            const result = addResources(listArray);
-
-            const afterLoad = () => {
-                try {
-                    if (typeof getLocalizationForPage === "function") {
-                        getLocalizationForPage(true);
-                    }
-                } catch (e) {
-                    console.warn("[cor-KR] getLocalizationForPage refresh failed", e);
-                }
-
-                cor_kr.applyGlobalTranslations();
-            };
-
-            if (result && typeof result.then === "function") {
-                return result.then(afterLoad);
-            }
-
-            setTimeout(afterLoad, 300);
-            return result;
-        }
-    },
-
-    applyGlobalTranslations: function () {
-        try {
-            if (typeof processTranslation !== "function") return;
-
-            cor_kr.installTranslationHook();
-            cor_kr.mergeGlobalIntoPageStrings();
-
-            const forceTranslate = (el) => {
-                if (!el) return;
-                processTranslation(el, true);
-            };
-
-            forceTranslate(document.querySelector("#dialogue-box"));
-            forceTranslate(document.querySelector("#readout"));
-            forceTranslate(document.querySelector("#minireadout"));
-            forceTranslate(document.querySelector("#meta-menu"));
-            forceTranslate(document.querySelector("#static"));
-
-            if (env && env.menu) {
-                forceTranslate(env.menu["system-menu"]);
-                forceTranslate(env.menu["entity-menu"]);
-                forceTranslate(env.menu["readout"]);
-            }
-
-            cor_kr.applyReplySubtitles();
-        } catch (e) {
-            console.warn("[cor-KR] applyGlobalTranslations failed", e);
-        }
-    },
-
-    bootApply: function () {
-        let attempts = 0;
-        const maxAttempts = 40;
-        const timer = setInterval(() => {
-            attempts += 1;
-
-            try {
-                cor_kr.installLocalizationHook();
-                if (typeof getLocalizationForPage === "function") {
-                    getLocalizationForPage(true);
-                }
-                cor_kr.applyGlobalTranslations();
-
-                if (env && env.menu && env.menu["system-menu"]) {
-                    clearInterval(timer);
-                }
-            } catch (e) {
-                // Keep retrying during early boot while UI mounts.
-            }
-
-            if (attempts >= maxAttempts) {
-                clearInterval(timer);
-            }
-        }, 250);
-    },
-
-    applyFont: function () {
-        if (document.querySelector("#cor-kr-font")) return;
-
-        const style = document.createElement("style");
-        style.id = "cor-kr-font";
-        style.textContent = `
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of 06af1c5 (dhll)
-=======
->>>>>>> parent of 06af1c5 (dhll)
-=======
->>>>>>> parent of 06af1c5 (dhll)
 @font-face {
     font-family: 'cor-kr-user-font';
     src: url('${cor_kr.baseUrl}fonts/Ycomputer.otf') format('opentype'),
@@ -247,189 +37,122 @@ body,
 #minireadout .message {
     font-family: 'cor-kr-user-font', monospace !important;
 }
-
-#dialogue-menu .reply {
-    position: relative;
-}
-
-#dialogue-menu .reply .cor-kr-sub {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -1.5em;
-    white-space: nowrap;
-    pointer-events: none;
-    font-family: 'cor-kr-user-font', monospace !important;
-    font-size: 0.6em;
-    letter-spacing: 0.08em;
-    line-height: 1;
-}
 `;
 
-        document.head.appendChild(style);
-    },
+// ============= 번역 유틸리티 함수 (cor-RU의 processSpecificTranslation 등) =============
 
-    applyReplySubtitles: function () {
-        document.querySelectorAll("#dialogue-menu .reply[name]").forEach((reply) => {
-            const baseLabel = (reply.getAttribute("name") || "").trim();
-            if (!baseLabel) return;
-
-            const translated = cor_kr.getTranslatedString(baseLabel);
-            const existing = reply.querySelector(".cor-kr-sub");
-
-            if (translated && translated !== baseLabel) {
-                if (existing) {
-                    existing.textContent = translated;
-                } else {
-                    const sub = document.createElement("span");
-                    sub.className = "cor-kr-sub";
-                    sub.textContent = translated;
-                    reply.appendChild(sub);
+cor_kr.processSpecificTranslation = function (selector, attribute = false) {
+    if (selector == "mindpike") {
+        document.querySelectorAll("#mindspike-examine").forEach(el => {
+            for (const childNode of el.childNodes) { childNode.textContent = "조사" }
+        });
+        document.querySelectorAll("#mindspike-act").forEach(el => {
+            for (const childNode of el.childNodes) { childNode.textContent = "행동" }
+        });
+    }
+    else if (attribute == false) {
+        selector.forEach(el => {
+            for (const childNode of el.childNodes) {
+                if (childNode.nodeType === Node.TEXT_NODE) {
+                    if (childNode.textContent != processStringTranslation(childNode.textContent))
+                        childNode.textContent = processStringTranslation(childNode.textContent);
                 }
-            } else if (existing) {
-                existing.remove();
             }
         });
-    },
-
-    observeDialogueMenu: function () {
-        if (cor_kr.dialogueObserver) return;
-
-        const dBox = document.getElementById("dialogue-box");
-        if (!dBox) return;
-
-        cor_kr.dialogueObserver = new MutationObserver(() => {
-            cor_kr.applyReplySubtitles();
-        });
-
-        cor_kr.dialogueObserver.observe(dBox, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ["name"]
-        });
-
-        cor_kr.applyReplySubtitles();
-    },
-
-    startObservers: function () {
-        cor_kr.observeDialogueMenu();
-
-        if (!cor_kr.translationLoop) {
-            cor_kr.translationLoop = setInterval(() => {
-                cor_kr.applyGlobalTranslations();
-            }, 1200);
-        }
-
-        const retry = setInterval(() => {
-            if (cor_kr.dialogueObserver) {
-                clearInterval(retry);
-                return;
+    }
+    else {
+        selector.forEach(el => {
+            if (el.getAttribute(attribute) != null) {
+                if (el.getAttribute(attribute) != processStringTranslation(el.getAttribute(attribute)))
+                    el.setAttribute(attribute, processStringTranslation(el.getAttribute(attribute)));
             }
-            cor_kr.observeDialogueMenu();
-        }, 1000);
-
-        setTimeout(() => clearInterval(retry), 15000);
+        });
     }
 };
 
-console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50; font-weight: bold;");
+cor_kr.processEntityNamesSafeguard = function () {
+    document.querySelectorAll("#content .target").forEach(el => {
+        let ent = el.getAttribute("entity");
+        if (ent) { el.setAttribute("entaltname", processStringTranslation(ent)) }
+    });
+};
 
-// readoutAdd 후킹: 엔티티 메시지 등도 강제 번역
-(function() {
-    const origReadoutAdd = window.readoutAdd;
-    window.readoutAdd = function(opts) {
-        if (opts && opts.message && typeof opts.message === "string") {
-            // 번역 테이블에서 찾아서 대체
-            let dict = (window.getLocalizationForPage && getLocalizationForPage(true).strings) || {};
-            if (dict[opts.message]) {
-                opts.message = dict[opts.message];
-            } else if (env.localization && env.localization.strings && env.localization.strings[opts.message]) {
-                opts.message = env.localization.strings[opts.message];
+cor_kr.processStatic = function (force) {
+    cor_kr.processSpecificTranslation(document.querySelectorAll('title'));
+    cor_kr.processSpecificTranslation(document.querySelectorAll(".enter"), 'page');
+    if (force) processTranslation(document.querySelector(`#static`), true);
+    else processTranslation(document.querySelector(`#static`));
+};
+
+cor_kr.processWarning = function (force) {
+    const ids = ['.cryptowarn', '#mod-warning', '#gpu-warning', '#wide-warning', '#dialogue-skip'];
+    ids.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) processTranslation(el, !!force);
+    });
+};
+
+cor_kr.processMenu = function () {
+    try {
+        env.menu['system-menu'].querySelectorAll(".fundfriend").forEach(el => { el.classList.add('tskip') });
+        cor_kr.processSpecificTranslation(env.menu['system-menu'].querySelectorAll('#savetext'), 'placeholder');
+        processTranslation(env.menu['system-menu']);
+        processTranslation(env.menu['entity-menu']);
+        processTranslation(document.querySelector("#meta-menu"));
+        processTranslation(document.querySelector(`#advance-notice`));
+        cor_kr.processSpecificTranslation(document.querySelectorAll('.ci-masks'), 'definition');
+        cor_kr.processSpecificTranslation(document.querySelectorAll('.ozo-mask'), 'definition');
+    } catch (e) { /* 메뉴 아직 준비 안됨 */ }
+};
+
+cor_kr.processReply = function () {
+    cor_kr.processSpecificTranslation(document.querySelectorAll('.reply'), 'name');
+    cor_kr.processSpecificTranslation(document.querySelectorAll('.reply'), 'definition');
+    cor_kr.processSpecificTranslation(document.querySelectorAll('.reply'), 'endtext');
+};
+
+cor_kr.processReadout = function () {
+    processTranslation(document.querySelector("#minireadout"));
+
+    const dothething = function (selector) {
+        if (selector == null) return;
+        let messages = selector.querySelectorAll(".message");
+        let length = messages.length - 1;
+        messages.forEach(el => {
+            if (length > 0) {
+                el.classList.add('tskip');
+                el.querySelectorAll("*").forEach(c => { c.classList.add('tskip') });
             }
-        }
-        return origReadoutAdd.apply(this, arguments);
-    };
-})();
-
-// chatter 후킹: entity 액션의 text 필드도 번역
-(function() {
-    if (typeof window.chatter !== "function") return;
-    const origChatter = window.chatter;
-    window.chatter = function(opts) {
-        if (opts && opts.text && typeof opts.text === "string") {
-            const t = cor_kr.getTranslatedString(opts.text);
-            if (t !== opts.text) opts.text = t;
-        }
-        if (opts && opts.message && typeof opts.message === "string") {
-            const t = cor_kr.getTranslatedString(opts.message);
-            if (t !== opts.message) opts.message = t;
-        }
-        return origChatter.apply(this, arguments);
-    };
-})();
-
-// 페이지 진입 감지: 게임이 자체 basement.js를 로드하여 env.fbx_* 를 덮어쓰므로
-// 페이지가 /fbx/로 들어오면 cor-KR의 한국어 entity 정의를 다시 적용한다.
-(function() {
-    // 1) moveTo 후킹 (게임 자체 navigation 함수)
-    const tryHookMoveTo = () => {
-        if (typeof window.moveTo !== "function" || window.__corKrMoveToHooked) return false;
-        // window.moveTo는 브라우저 기본 함수도 있으므로 게임 함수인지 체크
-        const origMoveTo = window.moveTo;
-        window.moveTo = function(path) {
-            const result = origMoveTo.apply(this, arguments);
-            console.log("[cor-KR] moveTo 감지:", path);
-            // 게임이 페이지 스크립트를 비동기 로드하므로 여러 시점에 재적용
-            [200, 600, 1200, 2500].forEach(delay => {
-                setTimeout(() => cor_kr.reapplyForCurrentPage(path), delay);
-            });
-            return result;
-        };
-        window.__corKrMoveToHooked = true;
-        console.log("[cor-KR] moveTo 후킹 완료");
-        return true;
-    };
-
-    // moveTo가 아직 정의 안되었을 수 있으므로 재시도
-    if (!tryHookMoveTo()) {
-        const retry = setInterval(() => {
-            if (tryHookMoveTo()) clearInterval(retry);
-        }, 200);
-        setTimeout(() => clearInterval(retry), 20000);
-    }
-
-    // 2) pathname 폴링 (백업) - hash 라우팅 가능성도 포함
-    let lastPath = "";
-    setInterval(() => {
-        const path = location.pathname + location.hash;
-        if (path === lastPath) return;
-        lastPath = path;
-        console.log("[cor-KR] path 변경:", path);
-        [300, 900, 1800].forEach(delay => {
-            setTimeout(() => cor_kr.reapplyForCurrentPage(path), delay);
+            if (length == 1) {
+                if (el.lastElementChild && el.lastElementChild.textContent == "NOTE::'restored partial recent log'")
+                    processTranslation(el, true);
+            }
+            length--;
         });
-    }, 500);
+        processTranslation(document.querySelector("#readout"));
+    };
 
-    // 3) 주기적 강제 확인: env.fbx_cyst가 영어인지 검사하여 한국어로 재덮어쓰기
-    setInterval(() => {
-        try {
-            if (typeof env === "undefined" || !env.fbx_cyst) return;
-            const t = env.fbx_cyst.Touch && env.fbx_cyst.Touch.text;
-            if (t && /[a-zA-Z]/.test(t) && !/[가-힣]/.test(t)) {
-                // 영어 그대로면 다시 적용
-                if (typeof cor_kr.applyBasementOverrides === "function") {
-                    cor_kr.applyBasementOverrides();
-                    console.log("[cor-KR] 영어 감지 - basement 강제 재적용");
-                }
+    dothething(document.querySelector("#readout"));
+    if (env.menu && env.menu['readout']) dothething(env.menu['readout']);
+    if (env.menuStorage && env.menuStorage.elements && env.menuStorage.elements['readout'])
+        dothething(env.menuStorage.elements['readout']);
+};
+
+// ============= 옵저버 정의 (cor-RU와 동일 구조) =============
+
+cor_kr.observer = {
+    common: {
+        func: (consolething) => {
+            processTranslation();
+            processTranslation(document.querySelector(`#mindspike-scanner`));
+            processTranslation(document.querySelector(`#advance-notice`));
+            cor_kr.processEntityNamesSafeguard();
+
+            if (document.querySelector("#combat")) {
+                processTranslation(document.querySelector(`#combat`), true);
+                cor_kr.processSpecificTranslation(document.querySelectorAll(".floater"), "amt");
             }
-        } catch (e) {}
-    }, 1500);
-})();
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
             if (consolething != undefined) console.log(consolething[0], consolething[1]);
         },
         observe: () => {
@@ -563,45 +286,9 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
         observe: () => {
             cor_kr.observer.page.itself.observe(body, { attributes: true, attributeFilter: ['page'] });
             console.log("%cpage observer is set up! - @cor-KR", cor_kr.fancy.setobserver);
-<<<<<<< HEAD
-        },
-        disconnectChildren: () => {
-            // page 전환 시 자식 옵저버들을 모두 disconnect 후 재연결 (스테일 노드 누적 방지)
-            try { cor_kr.observer.common.itself.disconnect(); } catch (e) {}
-            try { cor_kr.observer.bodychildren.itself.disconnect(); } catch (e) {}
-            try { cor_kr.observer.gad.itself.disconnect(); } catch (e) {}
-            try { cor_kr.observer.dialogue.itself.disconnect(); } catch (e) {}
-            try { cor_kr.observer.masks.itself.disconnect(); } catch (e) {}
-=======
-=======
->>>>>>> parent of 06af1c5 (dhll)
-=======
->>>>>>> parent of 06af1c5 (dhll)
-cor_kr.reapplyForCurrentPage = function(path) {
-    try {
-        const p = path || (location.pathname + location.hash);
-        if (p.indexOf("fbx") !== -1 && typeof cor_kr.applyBasementOverrides === "function") {
-            cor_kr.applyBasementOverrides();
-            console.log("[cor-KR] basement entity 오버라이드 재적용 완료 (path=" + p + ")");
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of 06af1c5 (dhll)
-=======
->>>>>>> parent of 06af1c5 (dhll)
-=======
->>>>>>> parent of 06af1c5 (dhll)
-=======
->>>>>>> parent of d00274d (Update cor-KR.js)
         }
-        if (typeof getLocalizationForPage === "function") getLocalizationForPage(true);
-        cor_kr.applyGlobalTranslations();
-    } catch (e) {
-        console.warn("[cor-KR] reapplyForCurrentPage failed", e);
     }
 };
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 // ============= 리소스 목록 및 lazy 로더 =============
 
@@ -673,14 +360,13 @@ cor_kr.updateResources(true);
 
 // 첫 페이지 처리도 트리거 (page observer가 첫 진입은 못 잡을 수 있음)
 setTimeout(() => {
-<<<<<<< HEAD
-    cor_kr._safeRun('page', () => cor_kr.observer.page.func(false));
+    try {
+        cor_kr.observer.page.func(false);
+    } catch (e) {
+        console.warn("[cor-KR] 초기 페이지 처리 실패", e);
+    }
 }, 1500);
-=======
-=======
->>>>>>> parent of 06af1c5 (dhll)
-=======
->>>>>>> parent of 06af1c5 (dhll)
+
 setTimeout(() => {
     try {
         const count = Object.keys(env.localization?.strings || {}).length;
@@ -689,25 +375,6 @@ setTimeout(() => {
         console.warn("[cor-KR] unable to read string count", e);
     }
 }, 800);
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of 06af1c5 (dhll)
-=======
->>>>>>> parent of 06af1c5 (dhll)
-=======
->>>>>>> parent of 06af1c5 (dhll)
-=======
-    try {
-        cor_kr.observer.page.func();
-    } catch (e) { console.warn("[cor-KR] 초기 페이지 처리 실패", e); }
-}, 1000);
->>>>>>> parent of d00274d (Update cor-KR.js)
 
-// 리소스 업데이트 시작
-cor_kr.initList();
-cor_kr.installTranslationHook();
-cor_kr.installLocalizationHook();
-cor_kr.applyFont();
-cor_kr.startObservers();
-cor_kr.updateResources();
-cor_kr.bootApply();
+console.log("%c[cor-KR] 한국어 로컬라이제이션 로드됨 - cor-RU 구조 기반", cor_kr.fancy.general);
+console.log("%c문의/버그: GitHub @0W1DD/corru-KR - @cor-KR", cor_kr.fancy.general);
