@@ -1,20 +1,21 @@
 // cor-KR 로컬라이제이션 - 지하 (Basement)
 // 페이지: fbx
+// EP0 시작 페이지
 
 if (!env.localization.page.fbx) env.localization.page.fbx = {};
 
 env.localization.page.fbx = {
     dialogues: {
-        // 대사 번역
+        // 게임 대사 번역 추가
     },
     definitions: {
-        // 정의 번역
+        // 정의 번역 추가
     },
     strings: {
-        // 문자열 번역
+        // 문자열 번역 추가
     },
     entityDescriptions: {
-        // 엔티티 설명 번역
+        // 엔티티 설명 번역 추가
     }
 };
 
