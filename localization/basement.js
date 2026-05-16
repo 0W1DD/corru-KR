@@ -73,4 +73,69 @@ sit
 END::env.enableSpikeCursor();MUI('deprohibit')
 `);
 
+// 추가 모스 대화 - 재사용 응답 객체
+env.localization.page['fbx'].dialogues.mthhubresp = generateDialogueObject(`
+RESPOBJ::
+   
+RESPONSES::self
+        어디서 이 낭포들을 찾아왔어?<+>where
+        저 권총으로 뭘 할 거야?<+>gun
+            SHOWIF::[["ep1_showmaterials", "both"], ["ep1_fed", true]]
+        상관없어<+>CHANGE::++moth
+           
+FAKEEND::(뒤로)
+`);
+
+// 모스와의 추가 대화
+env.localization.page['fbx'].dialogues["mth++fbx"] = generateDialogueObject(`
+start
+   
+self
+        내가 물어볼 게 있는데
+
+    moth
+        응?
+    
+   
+RESPOBJ::mthhubresp
+
+gun
+    self
+        근데 우리 그 권총 그냥 두는 건가?
+
+    moth
+     
+  아, 글쎄, 나중에 필요할 수도 있으니까
+        정직하게 말하면 지금 바로 돌려주기가 싫은 것도 있고
+        연구개발팀도 별로 필요 없을 거 같아, 사람을 죽일 일이 자주 있는 건 아니잖아
+        나중에 돌려줄 게
+
+    RESPOBJ::mthhubresp
+
+where
+    self
+        저건 어디서 건져온 거야?
+    
+    moth
+    
+   해양 바닥의 난파선에서 건져왔는데 뉴질랜드에서 그리 멀지 않은 곳이지
+        근데 "그리 멀지 않은"이라는 게, 남동쪽 해안에서 천 킬로미터 정도 떨어진 곳 말이야
+
+       정말 오지중의 오지라서...
+        글쎄, 뉴질랜드 주변보다 더 외진 곳도 없을 것 같아
+        쟤네들 평가론 원래 떨어져 있던 곳에서 충분히 멀리 표류했다고 생각하대
+        그들 추정으론 20~30년 이상은 해저에 있었던 것 같아
+
+   
+RESPOBJ::mthhubresp
+`);
+
+// 추가 UI 문자열 업데이트
+Object.assign(env.localization.page.fbx.strings, {
+    "about this job": "이 일에 대해서",
+    "you ready to feed this thing?": "이것 좀 먹일 준비 됐어?",
+    "haven't heard back on the request yet": "아직 요청에 대한 답변이 없어",
+    "so, still killing time here": "그래서 여기서 시간을 때우고 있어"
+});
+
 console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
