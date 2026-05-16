@@ -276,11 +276,12 @@ body,
     startObservers: function () {
         cor_kr.observeDialogueMenu();
 
-        if (!cor_kr.translationLoop) {
-            cor_kr.translationLoop = setInterval(() => {
-                cor_kr.applyGlobalTranslations();
-            }, 1200);
-        }
+        // [비활성화] 무한 루프 원인
+        // if (!cor_kr.translationLoop) {
+        //     cor_kr.translationLoop = setInterval(() => {
+        //         cor_kr.applyGlobalTranslations();
+        //     }, 1200);
+        // }
 
         const retry = setInterval(() => {
             if (cor_kr.dialogueObserver) {
@@ -361,31 +362,33 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
     }
 
     // 2) pathname 폴링 (백업) - hash 라우팅 가능성도 포함
-    let lastPath = "";
-    setInterval(() => {
-        const path = location.pathname + location.hash;
-        if (path === lastPath) return;
-        lastPath = path;
-        console.log("[cor-KR] path 변경:", path);
-        [300, 900, 1800].forEach(delay => {
-            setTimeout(() => cor_kr.reapplyForCurrentPage(path), delay);
-        });
-    }, 500);
+    // [비활성화] 무한 루프 원인
+    // let lastPath = "";
+    // setInterval(() => {
+    //     const path = location.pathname + location.hash;
+    //     if (path === lastPath) return;
+    //     lastPath = path;
+    //     console.log("[cor-KR] path 변경:", path);
+    //     [300, 900, 1800].forEach(delay => {
+    //         setTimeout(() => cor_kr.reapplyForCurrentPage(path), delay);
+    //     });
+    // }, 500);
 
     // 3) 주기적 강제 확인: env.fbx_cyst가 영어인지 검사하여 한국어로 재덮어쓰기
-    setInterval(() => {
-        try {
-            if (typeof env === "undefined" || !env.fbx_cyst) return;
-            const t = env.fbx_cyst.Touch && env.fbx_cyst.Touch.text;
-            if (t && /[a-zA-Z]/.test(t) && !/[가-힣]/.test(t)) {
-                // 영어 그대로면 다시 적용
-                if (typeof cor_kr.applyBasementOverrides === "function") {
-                    cor_kr.applyBasementOverrides();
-                    console.log("[cor-KR] 영어 감지 - basement 강제 재적용");
-                }
-            }
-        } catch (e) {}
-    }, 1500);
+    // [비활성화] 무한 루프 원인
+    // setInterval(() => {
+    //     try {
+    //         if (typeof env === "undefined" || !env.fbx_cyst) return;
+    //         const t = env.fbx_cyst.Touch && env.fbx_cyst.Touch.text;
+    //         if (t && /[a-zA-Z]/.test(t) && !/[가-힣]/.test(t)) {
+    //             // 영어 그대로면 다시 적용
+    //             if (typeof cor_kr.applyBasementOverrides === "function") {
+    //                 cor_kr.applyBasementOverrides();
+    //                 console.log("[cor-KR] 영어 감지 - basement 강제 재적용");
+    //             }
+    //         }
+    //     } catch (e) {}
+    // }, 1500);
 })();
 
 cor_kr.reapplyForCurrentPage = function(path) {
