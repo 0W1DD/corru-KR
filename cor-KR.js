@@ -319,6 +319,57 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
         return origReadoutAdd.apply(this, arguments);
     };
 })();
+
+// chatter 후킹: entity 액션의 text 필드도 번역
+(function() {
+    if (typeof window.chatter !== "function") return;
+    const origChatter = window.chatter;
+    window.chatter = function(opts) {
+        if (opts && opts.text && typeof opts.text === "string") {
+            const t = cor_kr.getTranslatedString(opts.text);
+            if (t !== opts.text) opts.text = t;
+        }
+        if (opts && opts.message && typeof opts.message === "string") {
+            const t = cor_kr.getTranslatedString(opts.message);
+            if (t !== opts.message) opts.message = t;
+        }
+        return origChatter.apply(this, arguments);
+    };
+})();
+
+// 페이지 진입 감지: 게임이 자체 basement.js를 로드하여 env.fbx_* 를 덮어쓰므로
+// 페이지가 /fbx/로 들어오면 cor-KR의 한국어 entity 정의를 다시 적용한다.
+(function() {
+    let lastPath = "";
+    setInterval(() => {
+        const path = location.pathname;
+        if (path === lastPath) return;
+        lastPath = path;
+
+        // 페이지가 바뀌었으므로 잠시 후 (원본 페이지 스크립트 실행 뒤) 오버라이드 재적용
+        setTimeout(() => {
+            try {
+                if (path.indexOf("/fbx") !== -1 && typeof cor_kr.applyBasementOverrides === "function") {
+                    cor_kr.applyBasementOverrides();
+                    console.log("[cor-KR] basement entity 오버라이드 재적용 완료");
+                }
+                if (typeof getLocalizationForPage === "function") getLocalizationForPage(true);
+                cor_kr.applyGlobalTranslations();
+            } catch (e) {
+                console.warn("[cor-KR] page-change reapply failed", e);
+            }
+        }, 500);
+
+        // 한번 더 늦게 재적용 (원본 스크립트가 비동기로 덮을 가능성 대비)
+        setTimeout(() => {
+            try {
+                if (path.indexOf("/fbx") !== -1 && typeof cor_kr.applyBasementOverrides === "function") {
+                    cor_kr.applyBasementOverrides();
+                }
+            } catch (e) {}
+        }, 1500);
+    }, 400);
+})();
 setTimeout(() => {
     try {
         const count = Object.keys(env.localization?.strings || {}).length;

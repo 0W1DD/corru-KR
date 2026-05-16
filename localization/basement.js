@@ -783,6 +783,11 @@ start
 console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
 
 // ===== 엔티티 상호작용 부분 =====
+// 게임 원본 basement.js가 페이지 진입 시 env.fbx_* 를 영어로 재정의하므로,
+// 함수로 감싸 페이지 진입 후에도 강제로 한국어 덮어쓰기를 반복 적용한다.
+window.cor_kr = window.cor_kr || {};
+cor_kr.applyBasementOverrides = function() {
+    if (typeof env === 'undefined') return;
 
 // 수상돌기 낭포
 env.fbx_dendritic_cyst = {
@@ -904,3 +909,8 @@ env.introConnect = ()=>{
     setTimeout(()=>{body.classList.add('spike11');change('introcompleted', true)}, 31000)
     setTimeout(()=>{env.intro.theme.fade(1, 0, 1000);moveTo("/hello/");}, 34000)
 }
+
+}; // end cor_kr.applyBasementOverrides
+
+// 즉시 한 번 적용 (게임 원본보다 먼저 정의하면 덮이므로, 페이지 진입 후 cor-KR이 반복 호출)
+cor_kr.applyBasementOverrides();
