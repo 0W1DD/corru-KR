@@ -123,15 +123,20 @@ cor_kr.processWarning = function (force) {
 
 cor_kr.processMenu = function () {
     try {
-        env.menu['system-menu'].querySelectorAll(".fundfriend").forEach(el => { el.classList.add('tskip') });
-        cor_kr.processSpecificTranslation(env.menu['system-menu'].querySelectorAll('#savetext'), 'placeholder');
-        processTranslation(env.menu['system-menu']);
-        processTranslation(env.menu['entity-menu']);
+        if (!env.menu) return;
+        if (env.menu['system-menu']) {
+            env.menu['system-menu'].querySelectorAll(".fundfriend").forEach(el => { el.classList.add('tskip') });
+            cor_kr.processSpecificTranslation(env.menu['system-menu'].querySelectorAll('#savetext'), 'placeholder');
+            processTranslation(env.menu['system-menu']);
+        }
+        if (env.menu['entity-menu']) processTranslation(env.menu['entity-menu']);
         processTranslation(document.querySelector("#meta-menu"));
         processTranslation(document.querySelector(`#advance-notice`));
         cor_kr.processSpecificTranslation(document.querySelectorAll('.ci-masks'), 'definition');
         cor_kr.processSpecificTranslation(document.querySelectorAll('.ozo-mask'), 'definition');
-    } catch (e) { /* 메뉴 아직 준비 안됨 */ }
+    } catch (e) {
+        console.warn('[cor-KR] processMenu failed', e);
+    }
 };
 
 cor_kr.processReply = function () {
@@ -143,28 +148,18 @@ cor_kr.processReply = function () {
 cor_kr.processReadout = function () {
     processTranslation(document.querySelector("#minireadout"));
 
-    const dothething = function (selector) {
-        if (selector == null) return;
-        let messages = selector.querySelectorAll(".message");
-        let length = messages.length - 1;
-        messages.forEach(el => {
-            if (length > 0) {
-                el.classList.add('tskip');
-                el.querySelectorAll("*").forEach(c => { c.classList.add('tskip') });
-            }
-            if (length == 1) {
-                if (el.lastElementChild && el.lastElementChild.textContent == "NOTE::'restored partial recent log'")
-                    processTranslation(el, true);
-            }
-            length--;
+    const translateSection = function (selector) {
+        if (!selector) return;
+        selector.querySelectorAll(".message").forEach(el => {
+            processTranslation(el);
         });
-        processTranslation(document.querySelector("#readout"));
+        processTranslation(selector);
     };
 
-    dothething(document.querySelector("#readout"));
-    if (env.menu && env.menu['readout']) dothething(env.menu['readout']);
+    translateSection(document.querySelector("#readout"));
+    if (env.menu && env.menu['readout']) translateSection(env.menu['readout']);
     if (env.menuStorage && env.menuStorage.elements && env.menuStorage.elements['readout'])
-        dothething(env.menuStorage.elements['readout']);
+        translateSection(env.menuStorage.elements['readout']);
 };
 
 // ============= 옵저버 정의 (cor-RU와 동일 구조) =============
@@ -196,6 +191,8 @@ cor_kr.observer = {
     bodychildren: {
         func: (consolething) => {
             cor_kr.processWarning();
+            cor_kr.processMenu();
+            cor_kr.processReadout();
 
             const entMenu = document.querySelectorAll('#entity-menu .ent');
             if (entMenu && entMenu.length) {
