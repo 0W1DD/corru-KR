@@ -780,6 +780,23 @@ start
         알겠어...<+>END
 `);
 
+// === 엔티티 설명 후처리 === //
+// entity descriptions 적용
+if (cor_ru && cor_ru.entity_menu) {
+    cor_ru.entity_menu['dendritic cyst'] = {
+        name: '수상돌기 낭포',
+        desc: env.localization.page.fbx.entityDescriptions['dendritic cyst']
+    };
+    cor_ru.entity_menu['fractalline cyst'] = {
+        name: '분지 낭포',
+        desc: env.localization.page.fbx.entityDescriptions['fractalline cyst']
+    };
+    cor_ru.entity_menu['cyst'] = {
+        name: '낭포',
+        desc: env.localization.page.fbx.entityDescriptions['cyst']
+    };
+}
+
 // === READOUT 메시지 번역 후킹 === //
 // readoutAdd()로 동적으로 추가되는 메시지를 번역 처리
 if (window.readoutAdd) {
@@ -790,7 +807,7 @@ if (window.readoutAdd) {
         // 추가된 메시지를 번역
         setTimeout(() => {
             if (document.querySelector("#readout")) {
-                processTranslation(document.querySelector("#readout"));
+                processTranslation(document.querySelector("#readout"), true);
                 if (cor_ru && cor_ru.processReadout) {
                     cor_ru.processReadout();
                 }
@@ -798,5 +815,8 @@ if (window.readoutAdd) {
         }, 50);
     };
 }
+
+// === 지속적인 DOM 번역 감시 === //
+getLocalizationForPage(true);
 
 console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
