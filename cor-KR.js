@@ -9,7 +9,7 @@ env.localization = {
 }
 
 cor_kr = {
-    baseUrl: "https://raw.githubusercontent.com/0W1DD/corru-KR/main/",
+    baseUrl: "https://0w1dd.github.io/corru-KR/",
 
     // 번역 처리
     processStringTranslation: function(text) {
