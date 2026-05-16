@@ -38,6 +38,7 @@ cor_kr = {
 <<<<<<< HEAD
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // 재진입 방지 락 (옵저버 → DOM 수정 → 옵저버 재발화 무한 루프 차단)
 cor_kr._locks = { common: false, bodychildren: false, gad: false, dialogue: false, masks: false, page: false };
 cor_kr._safeRun = function (name, fn) {
@@ -48,6 +49,8 @@ cor_kr._safeRun = function (name, fn) {
     setTimeout(() => { cor_kr._locks[name] = false; }, 0);
 };
 
+=======
+>>>>>>> parent of d00274d (Update cor-KR.js)
 // 폰트 CSS
 cor_kr.css = `
 =======
@@ -528,7 +531,6 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
     },
     page: {
         func: (consolething) => {
-            cor_kr.observer.page.disconnectChildren && cor_kr.observer.page.disconnectChildren();
             new Promise((resolve) => {
                 if (consolething) cor_kr.updateResources();
                 resolve(getLocalizationForPage(true));
@@ -561,6 +563,7 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
         observe: () => {
             cor_kr.observer.page.itself.observe(body, { attributes: true, attributeFilter: ['page'] });
             console.log("%cpage observer is set up! - @cor-KR", cor_kr.fancy.setobserver);
+<<<<<<< HEAD
         },
         disconnectChildren: () => {
             // page 전환 시 자식 옵저버들을 모두 disconnect 후 재연결 (스테일 노드 누적 방지)
@@ -587,6 +590,8 @@ cor_kr.reapplyForCurrentPage = function(path) {
 >>>>>>> parent of 06af1c5 (dhll)
 =======
 >>>>>>> parent of 06af1c5 (dhll)
+=======
+>>>>>>> parent of d00274d (Update cor-KR.js)
         }
         if (typeof getLocalizationForPage === "function") getLocalizationForPage(true);
         cor_kr.applyGlobalTranslations();
@@ -640,12 +645,12 @@ cor_kr.updateResources = function (fresh = false) {
 
 // ============= 옵저버 인스턴스 생성 =============
 
-cor_kr.observer.common.itself = new MutationObserver(() => cor_kr._safeRun('common', () => cor_kr.observer.common.func()));
-cor_kr.observer.bodychildren.itself = new MutationObserver(() => cor_kr._safeRun('bodychildren', () => cor_kr.observer.bodychildren.func()));
-cor_kr.observer.gad.itself = new MutationObserver(() => cor_kr._safeRun('gad', () => cor_kr.observer.gad.func()));
-cor_kr.observer.dialogue.itself = new MutationObserver(() => cor_kr._safeRun('dialogue', () => cor_kr.observer.dialogue.func()));
-cor_kr.observer.masks.itself = new MutationObserver(() => cor_kr._safeRun('masks', () => cor_kr.observer.masks.func()));
-cor_kr.observer.page.itself = new MutationObserver(() => cor_kr._safeRun('page', () => cor_kr.observer.page.func(true)));
+cor_kr.observer.common.itself = new MutationObserver(() => cor_kr.observer.common.func(["%ccommon observed! - @cor-KR", cor_kr.fancy.observed]));
+cor_kr.observer.bodychildren.itself = new MutationObserver(() => cor_kr.observer.bodychildren.func(["%cbodychildren observed! - @cor-KR", cor_kr.fancy.observed]));
+cor_kr.observer.gad.itself = new MutationObserver(() => cor_kr.observer.gad.func(["%cgad observed! - @cor-KR", cor_kr.fancy.observed]));
+cor_kr.observer.dialogue.itself = new MutationObserver(() => cor_kr.observer.dialogue.func(["%cdialogue observed! - @cor-KR", cor_kr.fancy.observed]));
+cor_kr.observer.masks.itself = new MutationObserver(() => cor_kr.observer.masks.func(["%cmasks observed! - @cor-KR", cor_kr.fancy.observed]));
+cor_kr.observer.page.itself = new MutationObserver(() => cor_kr.observer.page.func(["%cpage observed! - @cor-KR", cor_kr.fancy.observed]));
 
 // ============= 부트 =============
 
@@ -663,9 +668,12 @@ page.formedDefinitionStrings = undefined;
 // page observer 즉시 시작 (페이지 진입 감지)
 cor_kr.observer.page.observe();
 
-// 초기 리소스 로드 + 첫 페이지 처리 (한 번만)
+// 초기 리소스 로드 + 첫 페이지 처리
 cor_kr.updateResources(true);
+
+// 첫 페이지 처리도 트리거 (page observer가 첫 진입은 못 잡을 수 있음)
 setTimeout(() => {
+<<<<<<< HEAD
     cor_kr._safeRun('page', () => cor_kr.observer.page.func(false));
 }, 1500);
 =======
@@ -688,6 +696,12 @@ setTimeout(() => {
 >>>>>>> parent of 06af1c5 (dhll)
 =======
 >>>>>>> parent of 06af1c5 (dhll)
+=======
+    try {
+        cor_kr.observer.page.func();
+    } catch (e) { console.warn("[cor-KR] 초기 페이지 처리 실패", e); }
+}, 1000);
+>>>>>>> parent of d00274d (Update cor-KR.js)
 
 // 리소스 업데이트 시작
 cor_kr.initList();
