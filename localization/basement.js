@@ -781,3 +781,126 @@ start
 `);
 
 console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
+
+// ===== 엔티티 상호작용 부분 =====
+
+// 수상돌기 낭포
+env.fbx_dendritic_cyst = {
+    Examine: [
+        {delay: 2000, message: `내가 받은 기록에 따르면 저런 게 배에 엄청 많이 있었대`, actor: 'moth'},
+        {delay: 4000, message: `크기도 제각각이고`, actor: 'moth'},
+        {delay: 7000, message: `근데 대부분이 너무 무거워서... 그래서 이 작은 거 하나만 건져왔어`, actor: 'moth', cutscene: false},
+        {delay: 9000, message: `경고::'추가 행동 활성화됨';'재스캔'`, actor: 'sys'}
+    ],
+    Touch: {
+        text: "수상돌기 낭포는 단단한 외부 껍질이 있어. 이거에 연결할 방법은 없을 것 같아",
+        actor: "sourceless"
+    },
+    Lift: {
+        text: "수상돌기 낭포는 생각보다 무거워. 손에 들었다 놨다 하면 안에서 쇳소리가 계속 난다. 다시 내려놓으면 촉수들이 새로운 위치를 찾아서 테이블 위에 버티고 있어",
+        actor: "sourceless"
+    }
+};
+
+// 분지 낭포
+env.fbx_fractalline_cyst = {
+    Examine: [
+        {delay: 2000, message: `이건 뭔지 아무도 모르겠어... 근데 죽어있을 거 같긴 해`, actor: 'moth', cutscene: false},
+        {delay: 4000, message: `경고::'추가 행동 활성화됨';'재스캔'`, actor: 'sys'}
+    ],
+    Touch: {
+        text: "분지 낭포의 외부 껍질은 끈적이고 탱탱해. 꽉 짜면 아마 진흙처럼 될 거야... 그냥 손대지 말자",
+        actor: "sourceless"
+    }
+};
+
+// 핵심 낭포
+env.fbx_cyst = {
+    Examine: [
+        {delay: 2000, message: `자, 이게 수수께끼 조각이지`, actor: 'moth'},
+        {delay: 4000, message: `해양 바닥에 얼마나 오래 있었는지 생각해보면 상태가 이상하게 좋지`, actor: 'moth'},
+        {delay: 7000, message: `내부 구조가 우리가 전에 찾았던 네트워크 낭포와 비슷한 거 말고는 뭔지 모르겠어`, actor: 'moth', cutscene: false},
+        {delay: 9000, message: `경고::'추가 행동 활성화됨';'재스캔'`, actor: 'sys'}
+    ],
+    Touch: {
+        exec: `change('realcyst_touched', true); setTimeout(()=>chatter({actor: 'sys', text: "경고::'추가 행동 활성화됨';'재스캔'"}), 2000)`,
+        text: "낭포는 단단한 외부 껍질을 가지고 있어. 근데 위쪽에 있는 몇 개의 동그란 점들은 다른 부분보다 덜 단단해. 네 경험상 이런 건 보통 연결점이야. 이 지점을 더 자세히 스캔할 수 있을 거 같아",
+        actor: "sourceless"
+    },
+    DepthScan: {
+        exec: `change('realcyst_scanned', true); document.querySelector('.crosshair').classList.add('show')`,
+        text: "분석::'유효한 신경 지점';'연결 가능'",
+        actor: "sys"
+    }
+};
+
+// 연결 시작 함수
+env.introConnect = ()=>{
+    let cursor = document.querySelector('.cursor')
+    function adjustCursor(cursor, moved = false) {    
+        let tBox = document.querySelector('.cyst-container .crosshair').getBoundingClientRect()
+
+        var cystPoint = {
+            x: tBox.x + (tBox.width * 0.5),
+            y: tBox.y + (tBox.width * 0.5)
+        }
+
+        console.log(document.querySelector('.cyst-container .target'))
+        console.log(tBox)
+        console.log(`translate(${cystPoint.x}px, ${cystPoint.y}px)`)
+
+        cursor.style.transform = `translate(${cystPoint.x}px, ${cystPoint.y}px)`
+    }
+    
+    cutscene(true)
+    MUI('off'); MUI('prohibit')
+
+    if(check('introcompleted')) {
+        readoutAdd({message:`..__다시_연결중__..`, type:"sys"})
+        setTimeout(()=>{
+            env.spikeMoveLoopPaused = true
+            cursor.style.transition = `transform 2s ease-in-out, opacity 2s ease-in-out`
+            adjustCursor(cursor, false)
+            cursor.id = "cursor-upper-right"
+        }, 1000)
+
+        setTimeout(()=>{body.classList.add('spike0')}, 2000)
+        setTimeout(()=>{body.classList.add('spike1')}, 3000)
+        setTimeout(()=>{body.classList.add('spike2')}, 4000)
+        setTimeout(()=>{body.classList.add('spike3', 'spikefade')}, 4500)
+        setTimeout(()=>{flash(true); env.intro.glass.play()}, 4700)
+
+        if(check('hello__sentry-posthello')) {
+            setTimeout(()=>{moveTo("/hub/")}, 5000)
+        } else {
+            setTimeout(()=>{moveTo("/hello/")}, 5000)
+        }
+        setTimeout(()=>{flash(false)}, 6000)
+
+        return
+    }
+
+    setTimeout(()=>{readoutAdd({message:`..__연결점_위치파악됨__..`, type:"sys"})}, 1000)
+    setTimeout(()=>{
+        env.spikeMoveLoopPaused = true
+        cursor.style.transition = `transform 2s ease-in-out, opacity 2s ease-in-out`
+        adjustCursor(cursor, false)
+        cursor.id = "cursor-upper-right"
+    }, 2000)
+    setTimeout(()=>{readoutAdd({message:`..__시작중__..`, type:"sys"})}, 5500)
+    setTimeout(()=>{body.classList.add('spike0')}, 6000)
+    setTimeout(()=>{body.classList.add('spike1')}, 6500)
+    setTimeout(()=>{body.classList.add('spike2')}, 8500)
+    setTimeout(()=>{body.classList.add('spike3', 'spike4preflash')}, 9000)
+    setTimeout(()=>{body.classList.add('spike4', 'spike4flash', 'flash');env.intro.glass.play()}, 9300)
+    setTimeout(()=>{body.classList.add('spike4postflash'); body.classList.remove('spike4flash', 'flash'); page.bgm.fade(page.bgm.volume(), 0, 1000); env.bgm = null}, 9500)
+    setTimeout(()=>{body.classList.remove('spike4postflash')}, 10000)
+    setTimeout(()=>{body.classList.add('spike5', 'flash');env.intro.theme.play();play('criticalError')}, 13350)
+    setTimeout(()=>{body.classList.add('spike6'); body.classList.remove('flash')}, 15900)
+    setTimeout(()=>{body.classList.add('spike7')}, 16000)
+    setTimeout(()=>{body.classList.add('spike8')}, 20000)
+    setTimeout(()=>{body.classList.add('spike9')}, 21000)
+    setTimeout(()=>{body.classList.add('spike10')}, 28000)
+    setTimeout(()=>{body.classList.add('spike11');change('introcompleted', true)}, 31000)
+    setTimeout(()=>{env.intro.theme.fade(1, 0, 1000);moveTo("/hello/");}, 34000)
+}
