@@ -13,20 +13,33 @@ env.localization.strings = Object.assign(env.localization.strings || {}, {
 
     // Audio / common sliders
     "master": "전체",
+    "MASTER": "전체",
     "music": "음악",
+    "MUSIC": "음악",
     "sfx": "효과음",
+    "SFX": "효과음",
 
     // Data menu
     "mindspike data management": "마인드스파이크 데이터 관리",
+    "MINDSPIKE DATA MANAGEMENT": "마인드스파이크 데이터 관리",
     "import file": "파일 가져오기",
+    "IMPORT FILE": "파일 가져오기",
     "export file": "파일 내보내기",
+    "EXPORT FILE": "파일 내보내기",
     "select": "선택",
+    "SELECT": "선택",
     "delete": "삭제",
+    "DELETE": "삭제",
     "advanced operations": "고급 작업",
+    "ADVANCED OPERATIONS": "고급 작업",
     "load neural string": "신경 문자열 불러오기",
+    "LOAD NEURAL STRING": "신경 문자열 불러오기",
     "import string": "문자열 가져오기",
+    "IMPORT STRING": "문자열 가져오기",
     "modification url list": "모드 URL 목록",
+    "MODIFICATION URL LIST": "모드 URL 목록",
     "save list": "목록 저장",
+    "SAVE LIST": "목록 저장",
 
     // Settings
     "Visual Preferences": "시각 설정",

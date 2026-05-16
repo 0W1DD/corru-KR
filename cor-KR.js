@@ -101,6 +101,31 @@ cor_kr = {
         }
     },
 
+    bootApply: function () {
+        let attempts = 0;
+        const maxAttempts = 40;
+        const timer = setInterval(() => {
+            attempts += 1;
+
+            try {
+                if (typeof getLocalizationForPage === "function") {
+                    getLocalizationForPage(true);
+                }
+                cor_kr.applyGlobalTranslations();
+
+                if (env && env.menu && env.menu["system-menu"]) {
+                    clearInterval(timer);
+                }
+            } catch (e) {
+                // Keep retrying during early boot while UI mounts.
+            }
+
+            if (attempts >= maxAttempts) {
+                clearInterval(timer);
+            }
+        }, 250);
+    },
+
     applyFont: function () {
         if (document.querySelector("#cor-kr-font")) return;
 
@@ -215,3 +240,4 @@ cor_kr.initList();
 cor_kr.applyFont();
 cor_kr.startObservers();
 cor_kr.updateResources();
+cor_kr.bootApply();
