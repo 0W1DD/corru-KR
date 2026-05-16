@@ -5,7 +5,7 @@
     메인 로더. 복잡한 커스텀 옵저버를 제거하고 공식 env.localization 시스템을 사용합니다.
 */
 
-// EP1 이후는 미지원
+// EP1 이후는 미지원...
 if ((page && page.path == '/' && !check('TEMP!!sat') && check('ep0_epilogue') && !check('ep1_showmaterials')) || env.ep1 == true) {
     try {
         chatter({
