@@ -82,10 +82,21 @@ body,
     font-family: 'cor-kr-user-font', monospace !important;
 }
 
-#dialogue-menu .reply[data-kr-label]::after {
-    content: attr(data-kr-label) !important;
+#dialogue-menu .reply {
+    position: relative;
+}
+
+#dialogue-menu .reply .cor-kr-sub {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -1.5em;
+    white-space: nowrap;
+    pointer-events: none;
     font-family: 'cor-kr-user-font', monospace !important;
+    font-size: 0.6em;
     letter-spacing: 0.08em;
+    line-height: 1;
 }
 `;
 
@@ -98,10 +109,19 @@ body,
             if (!baseLabel) return;
 
             const translated = cor_kr.getTranslatedString(baseLabel);
+            const existing = reply.querySelector(".cor-kr-sub");
+
             if (translated && translated !== baseLabel) {
-                reply.setAttribute("data-kr-label", translated);
-            } else {
-                reply.removeAttribute("data-kr-label");
+                if (existing) {
+                    existing.textContent = translated;
+                } else {
+                    const sub = document.createElement("span");
+                    sub.className = "cor-kr-sub";
+                    sub.textContent = translated;
+                    reply.appendChild(sub);
+                }
+            } else if (existing) {
+                existing.remove();
             }
         });
     },
