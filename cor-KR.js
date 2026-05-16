@@ -83,16 +83,21 @@ cor_kr = {
         try {
             if (typeof processTranslation !== "function") return;
 
-            processTranslation(document.querySelector("#dialogue-box"));
-            processTranslation(document.querySelector("#readout"));
-            processTranslation(document.querySelector("#minireadout"));
-            processTranslation(document.querySelector("#meta-menu"));
-            processTranslation(document.querySelector("#static"));
+            const forceTranslate = (el) => {
+                if (!el) return;
+                processTranslation(el, true);
+            };
+
+            forceTranslate(document.querySelector("#dialogue-box"));
+            forceTranslate(document.querySelector("#readout"));
+            forceTranslate(document.querySelector("#minireadout"));
+            forceTranslate(document.querySelector("#meta-menu"));
+            forceTranslate(document.querySelector("#static"));
 
             if (env && env.menu) {
-                processTranslation(env.menu["system-menu"]);
-                processTranslation(env.menu["entity-menu"]);
-                processTranslation(env.menu["readout"]);
+                forceTranslate(env.menu["system-menu"]);
+                forceTranslate(env.menu["entity-menu"]);
+                forceTranslate(env.menu["readout"]);
             }
 
             cor_kr.applyReplySubtitles();
@@ -234,6 +239,14 @@ body,
 };
 
 console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50; font-weight: bold;");
+setTimeout(() => {
+    try {
+        const count = Object.keys(env.localization?.strings || {}).length;
+        console.log(`[cor-KR] loaded global string count: ${count}`);
+    } catch (e) {
+        console.warn("[cor-KR] unable to read string count", e);
+    }
+}, 800);
 
 // 리소스 업데이트 시작
 cor_kr.initList();
