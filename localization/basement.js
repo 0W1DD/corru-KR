@@ -29,6 +29,18 @@ Object.assign(env.localization.page.fbx.strings, {
     "the dendritic cyst has a rigid outer shell. it's unlikely that there's any way to connect to it": "수상돌기 낭포는 단단한 외부 껍질이 있어. 이거에 연결할 방법은 없을 것 같아",
     "the dendritic cyst is surprisingly heavy. turning it in your hands produces a cascade of metallic clinking noises from within. when you set it back down, its tendrils find a new orientation to support itself on the table": "수상돌기 낭포는 생각보다 무거워. 손에 들었다 놨다 하면 안에서 쇳소리가 계속 난다. 다시 내려놓으면 촉수들이 새로운 위치를 찾아서 테이블 위에 버티고 있어",
     "nobody knows what this one is.. pretty sure it's dead though": "이건 뭔지 아무도 모르겠어... 근데 죽어있을 거 같긴 해",
+    // 기존에 작성하신 소문자 버전
+    "nobody knows what this one is.. pretty sure it's dead though": "이건 뭔지 아무도 모르겠어... 근데 죽어있을 거 같긴 해",
+    
+    // [테스트 1] 대문자로 시작하는 버전 (가장 유력함)
+    "Nobody knows what this one is.. pretty sure it's dead though": "이건 뭔지 아무도 모르겠어... 근데 죽어있을 거 같긴 해",
+    
+    // [테스트 2] 끝에 공백이 있는 버전
+    "nobody knows what this one is.. pretty sure it's dead though ": "이건 뭔지 아무도 모르겠어... 근데 죽어있을 거 같긴 해",
+    "Nobody knows what this one is.. pretty sure it's dead though ": "이건 뭔지 아무도 모르겠어... 근데 죽어있을 거 같긴 해",
+
+    // [테스트 3] 어포스트로피가 다른 버전
+    "nobody knows what this one is.. pretty sure it’s dead though": "이건 뭔지 아무도 모르겠어... 근데 죽어있을 거 같긴 해",
     "the fractalline cyst's outer shell is slimy and has some yield. if you squeezed it enough, it would probably turn to sludge... best to just leave this one alone": "분지 낭포의 외부 껍질은 끈적이고 탱탱해. 꽉 짜면 아마 진흙처럼 될 거야... 그냥 손대지 말자",
     "it's in bizarrely good condition considering it was at the bottom of the ocean for however long it's been since, y'know": "해양 바닥에 얼마나 오래 있었는지 생각해보면 상태가 이상하게 좋지",
     "no clue what it is aside from some similar internal structure to network cysts we've found before": "내부 구조가 우리가 전에 찾았던 네트워크 낭포와 비슷한 거 말고는 뭔지 모르겠어",
@@ -821,7 +833,7 @@ if (window.readoutAdd) {
                 if (cor_kr && cor_kr.processReadout) {
                     cor_kr.processReadout();
                 }
-            }
+            }   
         }, 100);
     };
 }
