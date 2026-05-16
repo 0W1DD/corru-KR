@@ -52,6 +52,33 @@ cor_kr = {
         cor_kr.translationHookInstalled = true;
     },
 
+    installLocalizationHook: function () {
+        if (cor_kr.localizationHookInstalled) return;
+        if (typeof window.getLocalizationForPage !== "function") return;
+
+        const originalGetLocalizationForPage = window.getLocalizationForPage;
+
+        window.getLocalizationForPage = function () {
+            const result = originalGetLocalizationForPage.apply(this, arguments);
+
+            if (!result || typeof result !== "object") {
+                return result;
+            }
+
+            if (!result.strings) result.strings = {};
+            if (!result.definitions) result.definitions = {};
+            if (!result.entityDescriptions) result.entityDescriptions = {};
+
+            Object.assign(result.strings, env.localization?.strings || {});
+            Object.assign(result.definitions, env.localization?.definitions || {});
+            Object.assign(result.entityDescriptions, env.localization?.entityDescriptions || {});
+
+            return result;
+        };
+
+        cor_kr.localizationHookInstalled = true;
+    },
+
     mergeGlobalIntoPageStrings: function () {
         try {
             const pageKey = page && page.dialoguePrefix ? page.dialoguePrefix : null;
@@ -148,6 +175,7 @@ cor_kr = {
             attempts += 1;
 
             try {
+                cor_kr.installLocalizationHook();
                 if (typeof getLocalizationForPage === "function") {
                     getLocalizationForPage(true);
                 }
@@ -286,6 +314,7 @@ setTimeout(() => {
 // 리소스 업데이트 시작
 cor_kr.initList();
 cor_kr.installTranslationHook();
+cor_kr.installLocalizationHook();
 cor_kr.applyFont();
 cor_kr.startObservers();
 cor_kr.updateResources();
