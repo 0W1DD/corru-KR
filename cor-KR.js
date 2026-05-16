@@ -217,6 +217,46 @@ cor_kr.waitForReadoutAdd = function () {
     }, 300);
 };
 
+cor_kr.bindChatter = function () {
+    if (!window.chatter || window.__corKrChatterHooked) return;
+    const originalChatter = window.chatter;
+
+    window.chatter = function (obj) {
+        if (obj && obj.text && typeof obj.text === 'string') {
+            obj.text = cor_kr.translateReadoutMessage(obj.text);
+        }
+        if (obj && obj.message && typeof obj.message === 'string') {
+            obj.message = cor_kr.translateReadoutMessage(obj.message);
+        }
+        originalChatter(obj);
+        setTimeout(() => {
+            const readoutEl = document.querySelector("#readout");
+            if (readoutEl) {
+                processTranslation(readoutEl, true);
+                cor_kr.processReadout();
+            }
+        }, 50);
+    };
+
+    window.__corKrChatterHooked = true;
+    console.log("%c[cor-KR] chatter hook installed", cor_kr.fancy.general);
+};
+
+cor_kr.waitForChatter = function () {
+    if (window.chatter) {
+        cor_kr.bindChatter();
+        return;
+    }
+    if (cor_kr._chatterWaitTimer) return;
+    cor_kr._chatterWaitTimer = setInterval(() => {
+        if (window.chatter) {
+            cor_kr.bindChatter();
+            clearInterval(cor_kr._chatterWaitTimer);
+            cor_kr._chatterWaitTimer = null;
+        }
+    }, 300);
+};
+
 // ============= 옵저버 정의 (cor-RU와 동일 구조) =============
 
 cor_kr.observer = {
@@ -336,6 +376,7 @@ cor_kr.observer = {
         func: (consolething) => {
             cor_kr.observer.page.disconnectChildren && cor_kr.observer.page.disconnectChildren();
             cor_kr.waitForReadoutAdd();
+            cor_kr.waitForChatter();
             new Promise((resolve) => {
                 if (consolething) cor_kr.updateResources();
                 resolve(getLocalizationForPage(true));
@@ -449,6 +490,7 @@ cor_kr.observer.page.observe();
 // 초기 리소스 로드 + 첫 페이지 처리 (한 번만)
 cor_kr.updateResources(true);
 cor_kr.waitForReadoutAdd();
+cor_kr.waitForChatter();
 setTimeout(() => {
     cor_kr._safeRun('page', () => cor_kr.observer.page.func(false));
 }, 1500);
