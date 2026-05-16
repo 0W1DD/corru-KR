@@ -3,10 +3,6 @@
     cor-RU structure adapted for Korean.
 */
 
-if (typeof getLocalizationForPage === "function") {
-    getLocalizationForPage(true);
-}
-
 if (typeof cor_kr === "undefined") {
     window.cor_kr = {};
 }
@@ -74,9 +70,5 @@ env.localization.entityDescriptions = Object.assign(
 );
 
 cor_kr.getEntityMenuNames();
-
-if (typeof getLocalizationForPage === "function") {
-    getLocalizationForPage(true);
-}
 
 console.log("%c[cor-KR] entity menu localization loaded", "color: #2196F3; font-weight: bold;");

@@ -34,6 +34,38 @@ cor_kr = {
         if (env.localization.strings && env.localization.strings[text]) return env.localization.strings[text];
         return text;
     },
+
+    installTranslationHook: function () {
+        if (cor_kr.translationHookInstalled) return;
+
+        const original = typeof window.processStringTranslation === "function"
+            ? window.processStringTranslation
+            : null;
+
+        window.processStringTranslation = function (text) {
+            const translated = cor_kr.getTranslatedString(text);
+            if (translated !== text) return translated;
+            if (original) return original(text);
+            return text;
+        };
+
+        cor_kr.translationHookInstalled = true;
+    },
+
+    mergeGlobalIntoPageStrings: function () {
+        try {
+            const pageKey = page && page.dialoguePrefix ? page.dialoguePrefix : null;
+            if (!pageKey) return;
+
+            if (!env.localization.page) env.localization.page = {};
+            if (!env.localization.page[pageKey]) env.localization.page[pageKey] = {};
+            if (!env.localization.page[pageKey].strings) env.localization.page[pageKey].strings = {};
+
+            Object.assign(env.localization.page[pageKey].strings, env.localization.strings || {});
+        } catch (e) {
+            console.warn("[cor-KR] mergeGlobalIntoPageStrings failed", e);
+        }
+    },
     
     // 리소스 로드
     list: {
@@ -82,6 +114,9 @@ cor_kr = {
     applyGlobalTranslations: function () {
         try {
             if (typeof processTranslation !== "function") return;
+
+            cor_kr.installTranslationHook();
+            cor_kr.mergeGlobalIntoPageStrings();
 
             const forceTranslate = (el) => {
                 if (!el) return;
@@ -250,6 +285,7 @@ setTimeout(() => {
 
 // 리소스 업데이트 시작
 cor_kr.initList();
+cor_kr.installTranslationHook();
 cor_kr.applyFont();
 cor_kr.startObservers();
 cor_kr.updateResources();

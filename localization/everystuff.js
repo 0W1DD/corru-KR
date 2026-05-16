@@ -76,8 +76,4 @@ env.localization.definitions = {
     // 게임 용어 정의 - 필요시 추가
 };
 
-if (typeof getLocalizationForPage === "function") {
-    getLocalizationForPage(true);
-}
-
 console.log('%c[cor-KR] 공통 번역 데이터 로드됨', 'color: #2196F3; font-weight: bold;');
