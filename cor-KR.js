@@ -302,6 +302,23 @@ body,
 };
 
 console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50; font-weight: bold;");
+
+// readoutAdd 후킹: 엔티티 메시지 등도 강제 번역
+(function() {
+    const origReadoutAdd = window.readoutAdd;
+    window.readoutAdd = function(opts) {
+        if (opts && opts.message && typeof opts.message === "string") {
+            // 번역 테이블에서 찾아서 대체
+            let dict = (window.getLocalizationForPage && getLocalizationForPage(true).strings) || {};
+            if (dict[opts.message]) {
+                opts.message = dict[opts.message];
+            } else if (env.localization && env.localization.strings && env.localization.strings[opts.message]) {
+                opts.message = env.localization.strings[opts.message];
+            }
+        }
+        return origReadoutAdd.apply(this, arguments);
+    };
+})();
 setTimeout(() => {
     try {
         const count = Object.keys(env.localization?.strings || {}).length;
