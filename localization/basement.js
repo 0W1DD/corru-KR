@@ -162,7 +162,14 @@ Object.assign(env.localization.page.fbx.strings, {
     "you know, it might be handy": "알아, 나중에 쓸모가 있을 수도 있으니까",
     "to be honest with you i don't really feel like returning it right now lol": "솔직히 지금 당장 돌려주고 싶지 않아 하하",
     "r&d didn't seem like they needed it, it's not often they need to kill something": "연구개발팀은 필요 없어 보였어. 뭔가를 죽일 일이 자주 있지 않거든",
-    "i'll return it later": "나중에 돌려줄 게"
+    "i'll return it later": "나중에 돌려줄 게",
+    
+    // 엔티티 액션 라벨
+    "Examine": "조사하기",
+    "Touch": "만져보기",
+    "Lift": "들어올리기",
+    "Depth Scan": "깊이 스캔",
+    "ATTENTION::'additional ACT enabled';'rescan'": "경고::'추가 행동 활성화됨';'재스캔'"
 });
 
 // 엔티티 설명
