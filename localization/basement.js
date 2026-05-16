@@ -9,9 +9,8 @@ if (!env.localization.page.fbx) env.localization.page.fbx = {
 };
 
 // ==========================================
-// 1. 기본 UI 문자열 및 Readout 메시지 번역
+// 1. 기본 UI 문자열 및 액션 버튼, 메뉴 번역 정의
 // ==========================================
-// 공식 API가 이 목록을 참조해 화면의 텍스트(readout 포함)를 자동 변환합니다.
 Object.assign(env.localization.page.fbx.strings, {
     "hey buddy": "야, 친구",
     "welcome back": "다시 온 거야",
@@ -144,7 +143,7 @@ Object.assign(env.localization.page.fbx.strings, {
     "we still have no idea if it's even possible to repair": "우리가 아직도 수리가 가능한지도 모르잖아",
     "but, if things get...": "근데, 만약 상황이...",
     "i don't know, really down to the wire,": "글쎄, 정말 마지막까지 몰려갈 때",
-    "i've noticed the monitoring on biohazard disposals is really lax": "나 생물 위험 폐기물 모니터링이 정말 느슨한 걸 알아챘어",
+    "i've noticed the monitoring on biohazard disposals is really lax": "나 생물 위험 폐기물 모니터링이 정말 느슨한 걸 알아옜어",
     "not saying we do anything, but...": "...처음도 아니잖아",
     "look, let's just get started": "봐, 일단 시작하자",
     "if it comes to that, we'll cross that bridge when we get there": "그렇게 되면 그때 그 다리를 건넘으로 해",
@@ -165,18 +164,45 @@ Object.assign(env.localization.page.fbx.strings, {
     "r&d didn't seem like they needed it, it's not often they need to kill something": "연구개발팀은 필요 없어 보였어. 뭔가를 죽일 일이 자주 있지 않거든",
     "i'll return it later": "나중에 돌려줄 게",
     
-    // 엔티티 액션 라벨
+    // ------------------------------------------
+    // [중요] 엔티티 액션 라벨 대소문자 매칭 강화
+    // ------------------------------------------
     "examine": "조사하기",
+    "EXAMINE": "조사하기",
     "touch": "만져보기",
+    "TOUCH": "만져보기",
     "lift": "들어올리기",
+    "LIFT": "들어올리기",
     "depth scan": "깊이 스캔",
-    "ATTENTION::'additional ACT enabled';'rescan'": "경고::'추가 행동 활성화됨';'재스캔'"
+    "DEPTH SCAN": "깊이 스캔",
+    "attempt connection": "연결 시도",
+    "ATTEMPT CONNECTION": "연결 시도",
+    "ATTENTION::'additional ACT enabled';'rescan'": "경고::'추가 행동 활성화됨';'재스캔'",
+    
+    // 엔티티 이름 대소문자 매칭 강화 (메뉴 레이블 교체용)
+    "DENDRITIC CYST": "수상돌기 낭포",
+    "dendritic cyst": "수상돌기 낭포",
+    "Dendritic Cyst": "수상돌기 낭포",
+    "fractalline cyst": "분지 낭포",
+    "FRACTALLINE CYST": "분지 낭포",
+    "Fractalline Cyst": "분지 낭포",
+    "cyst": "낭포",
+    "CYST": "낭포",
+    "cystic column": "낭포 기둥",
+    "CYSTIC COLUMN": "낭포 기둥",
+    "connection point": "연결점",
+    "CONNECTION POINT": "연결점",
+    "plastic box": "플라스틱 상자",
+    "PLASTIC BOX": "플라스틱 상자",
+    "empty plastic box": "빈 플라스틱 상자",
+    "EMPTY PLASTIC BOX": "빈 플라스틱 상자",
+    "pistol": "권총",
+    "PISTOL": "권총"
 });
 
 // ==========================================
 // 2. 엔티티 설명 (Entity Descriptions)
 // ==========================================
-// 더 이상 수동으로 DOM을 추적해서 덮어씌울 필요 없이, 이 객체에 정의만 해두면 공식 API가 엔티티 클릭 시 자동으로 반영합니다.
 Object.assign(env.localization.page.fbx.entityDescriptions, {
     "DENDRITIC CYST": `::CORRU 낭포 존재
 ::기능 서명: 컨테이너
@@ -205,9 +231,6 @@ Object.assign(env.localization.page.fbx.entityDescriptions, {
 // ==========================================
 // 3. 다이얼로그 (Dialogues)
 // ==========================================
-// 이 부분은 게임 엔진 내부 파서가 처리하므로 기존 형태 그대로 유지합니다.
-
-// 초기 모스 인사말
 env.localization.page.fbx.dialogues.index = generateDialogueObject(`
 start
     moth
@@ -261,11 +284,8 @@ sit
         what is this<+>whatis
             SHOWONCE::
         activate mindspike<+>END
-
-END::env.enableSpikeCursor();MUI('deprohibit')
 `);
 
-// 재사용 응답 객체
 env.localization.page.fbx.dialogues.mthhubresp = generateDialogueObject(`
 RESPOBJ::
 
@@ -278,7 +298,6 @@ RESPONSES::self
 FAKEEND::(뒤로)
 `);
 
-// 모스와의 추가 대화
 env.localization.page.fbx.dialogues["mth++fbx"] = generateDialogueObject(`
 start
 
@@ -320,7 +339,6 @@ where
     RESPOBJ::mthhubresp
 `);
 
-// depthrecovery - 긴급 배출 후 대화
 env.localization.page.fbx.dialogues.depthrecovery = generateDialogueObject(`
 start
     sourceless quiet
@@ -431,7 +449,6 @@ entity
 END::flash(true);setTimeout(()=>{content.classList.remove('ep0-epi');change('ep0_epilogue', 'started');flash(false)}, 1000)
 `);
 
-// EP0 - 두 번째 배출 후
 env.localization.page.fbx.dialogues["ep0-depthrecovery2"] = generateDialogueObject(`
 start
     sourceless quiet
@@ -487,7 +504,6 @@ start
 END::flash(true);setTimeout(()=>{content.classList.remove('ep0-epi');env.enableSpikeCursor();flash(false)}, 1000)
 `);
 
-// EP0 - 에필로그 시작
 env.localization.page.fbx.dialogues["ep0_epilogue"] = generateDialogueObject(`
 start
     moth
@@ -534,7 +550,6 @@ start
         알겠어<+>END
 `);
 
-// EP1 - 재료 배송 후
 env.localization.page.fbx.dialogues["ep1_materials"] = generateDialogueObject(`
 start
     moth
@@ -593,7 +608,6 @@ start
         알겠어<+>END
 `);
 
-// EP1 - 구리 급식
 env.localization.page.fbx.dialogues["ep1_feedcopper"] = generateDialogueObject(`
 start
     self
@@ -664,7 +678,6 @@ done
 END::env.spikeMoveLoopPaused = false;body.classList.remove('prepgrab');;change('ep1_fed', 'copper')
 `);
 
-// EP1 - 컨테이너 살인
 env.localization.page.fbx.dialogues["ep1_feedcontainer"] = generateDialogueObject(`
 start
     sourceless
@@ -748,7 +761,6 @@ kill
 END::env.spikeMoveLoopPaused = false;body.classList.remove('prepgrab', 'containerseq');change('ep1_fed', 'container')
 `);
 
-// EP1 - 다음 대화
 env.localization.page.fbx.dialogues["ep1_followup"] = generateDialogueObject(`
 start
     moth
@@ -789,14 +801,11 @@ start
         알겠어...<+>END
 `);
 
-
 // ==========================================
 // 4. 로컬라이제이션 병합 및 완료
 // ==========================================
-
-// 게임 엔진에 이 페이지의 로컬라이제이션 데이터가 준비되었음을 알리고 병합합니다.
 if (typeof getLocalizationForPage === 'function') {
     getLocalizationForPage(true);
 }
 
-console.log('%c[cor-KR] basement 로컬라이제이션 로드됨 (수동 후킹 제거 & 최적화 완료)', 'color: #2196F3; font-weight: bold;');
+console.log('%c[cor-KR] basement 로컬라이제이션 로드됨 (대소문자 예외 및 레이블 강화)', 'color: #2196F3; font-weight: bold;');
