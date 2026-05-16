@@ -287,7 +287,7 @@ gun
 
     moth
 
-  아, 글쎄, 나중에 필요할 수도 있으니까
+        아, 글쎄, 나중에 필요할 수도 있으니까
         정직하게 말하면 지금 바로 돌려주기가 싫은 것도 있고
         연구개발팀도 별로 필요 없을 거 같아, 사람을 죽일 일이 자주 있는 건 아니잖아
         나중에 돌려줄 게
@@ -829,7 +829,7 @@ if (window.readoutAdd) {
 
 // === 지속적인 DOM 번역 감시 === //
 // [임시 비활성화] 무한 루프 원인 조사 중
-// getLocalizationForPage(true);
+getLocalizationForPage(true);
 
 console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
 
