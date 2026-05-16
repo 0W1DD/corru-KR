@@ -40,7 +40,7 @@ cor_kr.fancy = {
 };
 
 // 재진입 방지 락 (옵저버 → DOM 수정 → 옵저버 재발화 무한 루프 차단)
-cor_kr._locks = { common: false, bodychildren: false, gad: false, dialogue: false, masks: false, page: false };
+cor_kr._locks = { common: false, bodychildren: false, gad: false, dialogue: false, masks: false, page: false, readout: false };
 cor_kr._safeRun = function (name, fn) {
     if (cor_kr._locks[name]) return;
     cor_kr._locks[name] = true;
@@ -176,6 +176,7 @@ cor_kr.observer = {
             processTranslation(document.querySelector(`#mindspike-scanner`));
             processTranslation(document.querySelector(`#advance-notice`));
             cor_kr.processEntityNamesSafeguard();
+            cor_kr.processReadout();
 
             if (document.querySelector("#combat")) {
                 processTranslation(document.querySelector(`#combat`), true);
@@ -281,6 +282,18 @@ cor_kr.observer = {
             console.log("%cmasks observer is set up! - @cor-KR", cor_kr.fancy.setobserver);
         }
     },
+    readout: {
+        func: () => {
+            cor_kr.processReadout();
+        },
+        observe: () => {
+            const r = document.querySelector("#readout");
+            if (r) cor_kr.observer.readout.itself.observe(r, { childList: true, subtree: true });
+            const mr = document.querySelector("#minireadout");
+            if (mr) cor_kr.observer.readout.itself.observe(mr, { childList: true, subtree: true });
+            console.log("%creadout observer is set up! - @cor-KR", cor_kr.fancy.setobserver);
+        }
+    },
     page: {
         func: (consolething) => {
             cor_kr.observer.page.disconnectChildren && cor_kr.observer.page.disconnectChildren();
@@ -309,6 +322,9 @@ cor_kr.observer = {
                 cor_kr.observer.gad.observe();
                 cor_kr.observer.dialogue.observe();
                 cor_kr.observer.masks.observe();
+                cor_kr.observer.readout.observe();
+
+                cor_kr.processReadout();
 
                 if (consolething) console.log(consolething[0], consolething[1]);
             });
@@ -324,6 +340,7 @@ cor_kr.observer = {
             try { cor_kr.observer.gad.itself.disconnect(); } catch (e) {}
             try { cor_kr.observer.dialogue.itself.disconnect(); } catch (e) {}
             try { cor_kr.observer.masks.itself.disconnect(); } catch (e) {}
+            try { cor_kr.observer.readout.itself.disconnect(); } catch (e) {}
         }
     }
 };
@@ -375,6 +392,7 @@ cor_kr.observer.bodychildren.itself = new MutationObserver(() => cor_kr._safeRun
 cor_kr.observer.gad.itself = new MutationObserver(() => cor_kr._safeRun('gad', () => cor_kr.observer.gad.func()));
 cor_kr.observer.dialogue.itself = new MutationObserver(() => cor_kr._safeRun('dialogue', () => cor_kr.observer.dialogue.func()));
 cor_kr.observer.masks.itself = new MutationObserver(() => cor_kr._safeRun('masks', () => cor_kr.observer.masks.func()));
+cor_kr.observer.readout.itself = new MutationObserver(() => cor_kr._safeRun('readout', () => cor_kr.observer.readout.func()));
 cor_kr.observer.page.itself = new MutationObserver(() => cor_kr._safeRun('page', () => cor_kr.observer.page.func(true)));
 
 // ============= 부트 =============
