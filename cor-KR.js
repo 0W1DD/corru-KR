@@ -214,8 +214,6 @@ body,
 #readout .message,
 #minireadout .message {
     font-family: 'cor-kr-user-font', monospace !important;
-<<<<<<< HEAD
-=======
 }
 
 #dialogue-menu .reply {
@@ -233,7 +231,6 @@ body,
     font-size: 0.6em;
     letter-spacing: 0.08em;
     line-height: 1;
->>>>>>> parent of 06af1c5 (dhll)
 }
 `;
 
