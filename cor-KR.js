@@ -55,12 +55,19 @@ cor_kr = {
     --cor-kr-choice-font: 'cafe24', 'ycomputer', "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 }
 
-body,
+body {
+    font-family: var(--cor-kr-font);
+}
+
 #dialogue-box,
 #readout,
 #minireadout,
 #system-menu,
-#entity-menu {
+#entity-menu,
+.menu,
+.button,
+.reply,
+.response {
     font-family: var(--cor-kr-font);
 }
 
@@ -74,6 +81,7 @@ body,
 body[state="corru-loaded"][menu="none"]:not(.in-dialogue)::before, body.loading::after, body.corru-refreshing::after {
     content: "경고::'마인드스파이크 사용은 광과민성 뇌전증이 있는 사용자에게 발작을 유발할 수 있습니다.';\\A'하드웨어 가속을 켜 두면 일시적인 화면 어긋남을 줄일 수 있습니다.';\\A'일부 브라우저 확장 프로그램은 성능에 영향을 줄 수 있습니다.';\\A'계속 진행할지는 사용자의 판단에 따릅니다.'";
     font-family: var(--cor-kr-font);
+
     font-size: 0.75em;
     max-width: 600px;
     position: fixed;
