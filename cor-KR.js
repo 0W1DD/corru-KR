@@ -225,6 +225,7 @@ cor_kr.observer = {
             processTranslation();
             processTranslation(document.querySelector(`#mindspike-scanner`));
             processTranslation(document.querySelector(`#advance-notice`));
+            cor_kr.processReadout();
             cor_kr.processEntityNamesSafeguard();
 
             if (document.querySelector("#combat")) {
@@ -334,6 +335,7 @@ cor_kr.observer = {
     page: {
         func: (consolething) => {
             cor_kr.observer.page.disconnectChildren && cor_kr.observer.page.disconnectChildren();
+            cor_kr.waitForReadoutAdd();
             new Promise((resolve) => {
                 if (consolething) cor_kr.updateResources();
                 resolve(getLocalizationForPage(true));
@@ -342,6 +344,7 @@ cor_kr.observer = {
                 cor_kr.processStatic(true);
                 cor_kr.processMenu();
                 cor_kr.processWarning();
+                cor_kr.processReadout();
 
                 const defBox = document.querySelector(`#definition-box`);
                 if (defBox) processTranslation(defBox);
@@ -445,6 +448,7 @@ cor_kr.observer.page.observe();
 
 // 초기 리소스 로드 + 첫 페이지 처리 (한 번만)
 cor_kr.updateResources(true);
+cor_kr.waitForReadoutAdd();
 setTimeout(() => {
     cor_kr._safeRun('page', () => cor_kr.observer.page.func(false));
 }, 1500);
