@@ -35,6 +35,7 @@ cor_kr = {
         return text;
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 // 재진입 방지 락 (옵저버 → DOM 수정 → 옵저버 재발화 무한 루프 차단)
@@ -50,6 +51,9 @@ cor_kr._safeRun = function (name, fn) {
 // 폰트 CSS
 cor_kr.css = `
 =======
+=======
+
+>>>>>>> parent of 06af1c5 (dhll)
 =======
 
 >>>>>>> parent of 06af1c5 (dhll)
@@ -219,6 +223,9 @@ cor_kr.css = `
         style.id = "cor-kr-font";
         style.textContent = `
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 06af1c5 (dhll)
+=======
 >>>>>>> parent of 06af1c5 (dhll)
 =======
 >>>>>>> parent of 06af1c5 (dhll)
@@ -419,6 +426,7 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (consolething != undefined) console.log(consolething[0], consolething[1]);
         },
         observe: () => {
@@ -564,6 +572,8 @@ console.log("%c[cor-KR] 한글 로컬라이제이션 로드됨", "color: #4CAF50
 =======
 =======
 >>>>>>> parent of 06af1c5 (dhll)
+=======
+>>>>>>> parent of 06af1c5 (dhll)
 cor_kr.reapplyForCurrentPage = function(path) {
     try {
         const p = path || (location.pathname + location.hash);
@@ -571,6 +581,9 @@ cor_kr.reapplyForCurrentPage = function(path) {
             cor_kr.applyBasementOverrides();
             console.log("[cor-KR] basement entity 오버라이드 재적용 완료 (path=" + p + ")");
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 06af1c5 (dhll)
+=======
 >>>>>>> parent of 06af1c5 (dhll)
 =======
 >>>>>>> parent of 06af1c5 (dhll)
@@ -581,6 +594,7 @@ cor_kr.reapplyForCurrentPage = function(path) {
         console.warn("[cor-KR] reapplyForCurrentPage failed", e);
     }
 };
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -657,6 +671,8 @@ setTimeout(() => {
 =======
 =======
 >>>>>>> parent of 06af1c5 (dhll)
+=======
+>>>>>>> parent of 06af1c5 (dhll)
 setTimeout(() => {
     try {
         const count = Object.keys(env.localization?.strings || {}).length;
@@ -666,6 +682,9 @@ setTimeout(() => {
     }
 }, 800);
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 06af1c5 (dhll)
+=======
 >>>>>>> parent of 06af1c5 (dhll)
 =======
 >>>>>>> parent of 06af1c5 (dhll)
