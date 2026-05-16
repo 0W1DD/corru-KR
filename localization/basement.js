@@ -292,7 +292,7 @@ gun
         연구개발팀도 별로 필요 없을 거 같아, 사람을 죽일 일이 자주 있는 건 아니잖아
         나중에 돌려줄 게
 
-    RESPOBJ::mthhubresp
+    RESPOBJ::mthhubresp 
 
 where
     self
@@ -782,16 +782,16 @@ start
 
 // === 엔티티 설명 후처리 === //
 // entity descriptions 적용
-if (cor_ru && cor_ru.entity_menu) {
-    cor_ru.entity_menu['dendritic cyst'] = {
+if (cor_kr && cor_kr.entity_menu) {
+    cor_kr.entity_menu['dendritic cyst'] = {
         name: '수상돌기 낭포',
         desc: env.localization.page.fbx.entityDescriptions['dendritic cyst']
     };
-    cor_ru.entity_menu['fractalline cyst'] = {
+    cor_kr.entity_menu['fractalline cyst'] = {
         name: '분지 낭포',
         desc: env.localization.page.fbx.entityDescriptions['fractalline cyst']
     };
-    cor_ru.entity_menu['cyst'] = {
+    cor_kr.entity_menu['cyst'] = {
         name: '낭포',
         desc: env.localization.page.fbx.entityDescriptions['cyst']
     };
@@ -800,7 +800,7 @@ if (cor_ru && cor_ru.entity_menu) {
 // === READOUT 메시지 번역 후킹 === //
 // readoutAdd()로 동적으로 추가되는 메시지를 번역 처리
 // [임시 비활성화] 무한 루프 원인 조사 중
-/*
+
 if (window.readoutAdd) {
     const originalReadoutAdd = window.readoutAdd;
     window.readoutAdd = function(obj) {
@@ -818,17 +818,14 @@ if (window.readoutAdd) {
         setTimeout(() => {
             if (document.querySelector("#readout")) {
                 processTranslation(document.querySelector("#readout"), true);
-                if (cor_ru && cor_ru.processReadout) {
-                    cor_ru.processReadout();
+                if (cor_kr && cor_kr.processReadout) {
+                    cor_kr.processReadout();
                 }
             }
         }, 100);
     };
 }
-*/
 
-// === 지속적인 DOM 번역 감시 === //
-// [임시 비활성화] 무한 루프 원인 조사 중
 getLocalizationForPage(true);
 
 console.log('%c[cor-KR] basement 로컬라이제이션 로드됨', 'color: #2196F3; font-weight: bold;');
